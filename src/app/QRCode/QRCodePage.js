@@ -1,4 +1,3 @@
-
 'use client';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
@@ -127,7 +126,7 @@ if (data) {
 
 export default QRCodePage;
 
-// 'use client'
+
 // import { useState, useEffect, useRef } from "react";
 // import { useRouter } from 'next/navigation'; 
 // import axios from 'axios';
