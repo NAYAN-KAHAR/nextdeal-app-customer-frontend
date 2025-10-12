@@ -34,7 +34,7 @@ const SignUp  = () => {
     const [auth, setAuth] = useState(false);
     const [loading, setLoading] = useState(true); 
     const router = useRouter();
-  
+  // console.log(apiUrl)
 
 // Redirect if already logged in
   useEffect(() => {

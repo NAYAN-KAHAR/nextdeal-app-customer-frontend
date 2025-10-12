@@ -102,7 +102,7 @@ useEffect(() => {
 const getMyAllCoupons = async () => {
     try{
       const res = await axios.get(`${apiUrl}/api/next-offers-get-mycoupons`,{withCredentials:true});
-      // console.log(res.data);
+      console.log(res.data);
       setMyAllCoupons(res.data.filteredCoupons);
       setMyTotalCoupons(res.data.filteredCoupons);
 
@@ -248,7 +248,7 @@ if(!auth) return <div className="text-center mt-4">Checking</div>
 <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 p-4 md:p-6">
 {myAllCoupons && myAllCoupons.map((value, i) => (
   <div key={i} className=" z-50 bg-white shadow-lg rounded-xl p-3 flex justify-between 
-               transition-transform duration-200 hover:scale-105" >
+               transition-transform duration-200 " >
 
 
 
@@ -261,6 +261,7 @@ if(!auth) return <div className="text-center mt-4">Checking</div>
        <div className="ml-4">
            <h2 className="text-md md:text-lg font-semibold mt-1">{value.shopkeeper?.business_name}</h2>
         <p className="text-sm text-gray-600 mt-1 font-medium">{value.shopkeeper?.address}</p>
+        <span  className="text-sm text-green-700 mt-1 px-1">{value?.coupon?.couponName}</span>
        </div>
      
 

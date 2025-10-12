@@ -195,8 +195,8 @@ useEffect(() => {
 
 <div className="md:p-6 p-4 text-2xl font-bold ">All Shop Free Coupons</div>      
   {/* shopcard */}
-{/* <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 p-4 md:p-6"> */}
-<div className="w-full flex justify-between items-center p-1.5 md:p-6">
+<div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 p-4 md:p-6">
+{/* <div className="w-full flex justify-between items-center p-1.5 md:p-6 flex-col gap-2"> */}
 {groupedCoupons && groupedCoupons.map((value, i) => (
   <div key={i} className="z-50 bg-white shadow-lg rounded-xl p-3 flex justify-between 
                transition" >
