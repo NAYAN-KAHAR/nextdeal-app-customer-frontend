@@ -12,12 +12,117 @@ const apiUrl = process.env.NEXT_PUBLIC_CUSTOMER_API_URL;
 
 
 
-
 const shopCategories = [
-  "grocery", "bakery", "pharmacy", "clothing", "electronics", "books",
-  "furniture", "hardware", "jewelry", "toys", "pet", "beauty", "sports",
-  "music", "florist", "convenience", "stationery", "optical", "shoe", "auto"
-]
+  { value: 'all shop', label: 'all shop' },
+  { value: 'grocery', label: 'Grocery Shop' },
+  { value: 'supermarket', label: 'Supermarket' },
+  { value: 'hypermarket', label: 'Hypermarket' },
+  { value: 'kirana', label: 'Kirana Store' },
+  { value: 'bakery', label: 'Bakery' },
+  { value: 'sweetshop', label: 'Sweet Shop / Mithai Shop' },
+  { value: 'confectionery', label: 'Confectionery Store' },
+  { value: 'pharmacy', label: 'Pharmacy' },
+  { value: 'clothing', label: 'Clothing Store' },
+  { value: 'ethnicwear', label: 'Ethnic Wear Store' },
+  { value: 'westernwear', label: 'Western Wear' },
+  { value: 'kidswear', label: 'Kids Wear Store' },
+  { value: 'footwear', label: 'Shoe Store / Footwear' },
+  { value: 'electronics', label: 'Electronics Shop' },
+  { value: 'mobile', label: 'Mobile Phone Showroom' },
+  { value: 'appliance', label: 'Home Appliances Store' },
+  { value: 'computer', label: 'Computer / Laptop Store' },
+  { value: 'books', label: 'Bookstore' },
+  { value: 'stationery', label: 'Stationery Shop' },
+  { value: 'furniture', label: 'Furniture Store' },
+  { value: 'home_decor', label: 'Home Decor / Furnishings' },
+  { value: 'hardware', label: 'Hardware Store' },
+  { value: 'paint', label: 'Paints & Wallpaper Shop' },
+  { value: 'plumbing', label: 'Plumbing & Sanitary Store' },
+  { value: 'electrical', label: 'Electrical Goods Store' },
+  { value: 'jewelry', label: 'Jewelry Shop' },
+  { value: 'artificial_jewelry', label: 'Artificial / Fashion Jewelry' },
+  { value: 'precious_jewelry', label: 'Precious Jewelry' },
+  { value: 'watches', label: 'Watch Store' },
+  { value: 'beauty', label: 'Beauty Products / Cosmetics' },
+  { value: 'perfume', label: 'Perfume / Fragrance Shop' },
+  { value: 'salon', label: 'Beauty Salon / Parlor' },
+  { value: 'spa', label: 'Spa' },
+  { value: 'haircare', label: 'Hair Care Products' },
+  { value: 'skincare', label: 'Skincare Products' },
+  { value: 'tattoo', label: 'Tattoo Studio' },
+  { value: 'optical', label: 'Optical Store / Eyewear' },
+  { value: 'watch_repair', label: 'Watch Repair Shop' },
+  { value: 'repair', label: 'Repair Shop (General)' },
+  { value: 'tailor', label: 'Tailor / Alteration Shop' },
+  { value: 'drycleaning', label: 'Dry Cleaners' },
+  { value: 'laundry', label: 'Laundry Service' },
+  { value: 'photography', label: 'Photo Studio' },
+  { value: 'camera', label: 'Camera & Photography Equipment' },
+  { value: 'gift', label: 'Gift & Souvenir Shop' },
+  { value: 'toy', label: 'Toy Store' },
+  { value: 'pet', label: 'Pet Supplies / Pet Shop' },
+  { value: 'pet_grooming', label: 'Pet Grooming' },
+  { value: 'florist', label: 'Florist' },
+  { value: 'garden', label: 'Nursery / Plant Shop' },
+  { value: 'sports', label: 'Sports Equipment' },
+  { value: 'fitness', label: 'Gym / Fitness Equipment' },
+  { value: 'cycling', label: 'Bicycle Shop' },
+  { value: 'motorcycle', label: 'Motorcycle / Scooter Store' },
+  { value: 'auto_parts', label: 'Auto Parts Store' },
+  { value: 'tyre_shop', label: 'Tyre & Tube Shop' },
+  { value: 'petrol_pump_shop', label: 'Fuel Station Convenience Store' },
+  { value: 'car_dealership', label: 'Car Dealership' },
+  { value: 'motorbike_dealership', label: 'Motorbike Dealership' },
+  { value: 'convenience', label: 'Convenience Store' },
+  { value: 'department_store', label: 'Department Store' },
+  { value: 'mall_kiosk', label: 'Mall Kiosk' },
+  { value: 'mobile_accessories', label: 'Mobile Accessories Shop' },
+  { value: 'hardware_tools', label: 'Tools & Machinery' },
+  { value: 'stationery_and_art', label: 'Art & Stationery’' },
+  { value: 'music', label: 'Music Store / Instruments' },
+  { value: 'vinyl_records', label: 'Record/CD Store' },
+  { value: 'internet_cafe', label: 'Internet Cafe / Cyber Cafe' },
+  { value: 'photocopy', label: 'Photocopy / Print Shop' },
+  { value: 'luggage', label: 'Luggage & Bags' },
+  { value: 'leather_goods', label: 'Leather Products' },
+  { value: 'handicrafts', label: 'Handicrafts & Local Crafts' },
+  { value: 'antique', label: 'Antique Shop' },
+  { value: 'fabrics', label: 'Fabric / Textile Store' },
+  { value: 'silk_shop', label: 'Silk / Saree Shop' },
+  { value: 'unstitched_fabrics', label: 'Unstitched Fabrics Shop' },
+  { value: 'hosiery', label: 'Hosiery Shop' },
+  { value: 'innerwear', label: 'Lingerie / Innerwear Store' },
+  { value: 'swimwear', label: 'Swimwear Store' },
+  { value: 'luxury_goods', label: 'Luxury Goods Boutique' },
+  { value: 'designer_wear', label: 'Designer Wear' },
+  { value: 'bridal_wear', label: 'Bridal Store' },
+  { value: 'wedding_shops', label: 'Wedding Shop (decor / clothes / services)' },
+  { value: 'party_supplies', label: 'Party Supplies Shop' },
+  { value: 'bakery_cafe', label: 'Bakery + Cafe' },
+  { value: 'coffee_shop', label: 'Tea / Coffee Shop' },
+  { value: 'juice_bar', label: 'Juice Bar / Fresh Juice Shop' },
+  { value: 'icecream_parlor', label: 'Ice Cream Parlor' },
+  { value: 'chat_stall', label: 'Street Food / Chat Stall' },
+  { value: 'fast_food', label: 'Fast Food Outlet' },
+  { value: 'restaurant', label: 'Restaurant' },
+  { value: 'dhaba', label: 'Dhaba / Roadside Eatery' },
+  { value: 'food_truck', label: 'Food Truck' },
+  { value: 'takeaway', label: 'Takeaway / Takeout' },
+  { value: 'hotel_shop', label: 'Hotel / Guest House Gift Shop' },
+  { value: 'travel_agency', label: 'Travel Agency' },
+  { value: 'ticketing', label: 'Ticketing Office' },
+  { value: 'florist_supplies', label: 'Flower & Decoration Supplies' },
+  { value: 'cosmetic_salon', label: 'Cosmetic / Makeup Studio' },
+  { value: 'skin_clinic', label: 'Skin Clinic' },
+  { value: 'ayurvedic_shop', label: 'Ayurvedic / Herbal Products' },
+  { value: 'homeopathy_shop', label: 'Homeopathy / Unani Products' },
+  { value: 'organic_food', label: 'Organic Food & Health Store' },
+  { value: 'dietary_supplements', label: 'Health Foods Store' },
+  { value: 'medical_equipment', label: 'Medical Equipment Shop' },
+  { value: 'oxygen_supply', label: 'Oxygen / Medical Gases Supplier' },
+  { value: 'orthopedic', label: 'Orthopedic & Prosthetics Shop' }
+];
+
 const HomePage = () => {
 const router = useRouter();
 const [auth, setAuth] = useState(false);
@@ -63,7 +168,7 @@ const handleSelectd = (e) => {
 // fetch all shops on homepage
 const getAllShops = async () => {
   try{
-     const url = category
+     const url = category && category !=='all shop'
       ? `${apiUrl}/api/shopkeeper-category-shop/${category}`
       : `${apiUrl}/api/shopkeepers-shops`;
 
@@ -115,11 +220,12 @@ if(!auth) return <div className="mt-4 text-center">Checking</div>
           <div className="w-full p-2 flex justify-between items-center gap-6">
 
             <select name="shop category" id="shop category" onChange={handleSelectd}
+             value={category}
             className="w-1/2  border border-gray-500 rounded-md p-2 md:p-3 text-gray-700
-             focus:outline-none
+             focus:outline-none 
             focus:ring-2 focus:ring-rose-600 focus:border-none text-sm" defaultValue="">
             <option value="" disabled>Shop Categories</option>
-            {shopCategories.map((value, i) => (
+            {shopCategories.map(({value, label},i) => (
               <option key={i} value={value} className="text-gray-700">
                 {value}
               </option>

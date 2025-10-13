@@ -88,24 +88,31 @@ if (data) {
 
  {/* Form */}
   <div className="z-100 w-full grid grid-cols-1 md:grid-cols-1 gap-2 p-4 md:p-6">         
-          <div className=" w-full bg-white shadow-2xl mt-2
+      <div className=" w-full bg-white shadow-2xl mt-2
           rounded-2xl z-50  p-3 ">
 
-              <div className="flex justify-between items-center">
-                    <div className="flex flex-col gap-1">
-                  <p>{qrValue && qrValue.couponName}</p>
+            <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-1">
+                   <p>{qrValue && qrValue.couponName}</p>
+                 </div>
 
-                
-                </div>
                 <button disabled className="px-3 py-2 rounded-2xl bg-red-600 text-white
-                font-semibold cursor-not-allowed text-sm">Pending</button>
-                </div>
-            <p className="mt-2 text-red-500 px-1">
+                  font-semibold cursor-not-allowed text-sm">Pending Accept</button>
+            </div>
+
+            <p className="mt-1 text-red-500">
               <span>You have spend minimum ₹</span>
-              <span>{qrValue && qrValue.spendingAmount}</span></p>
-          </div>
-          
+              <span>{qrValue && qrValue.spendingAmount}</span>
+              
+              </p>
+              
+          <p className="mt-2 text-sm text-gray-500 px-1 italic">
+                 Waiting for shopkeeper’s response...
+           </p>
+
         </div>
+          
+    </div>
 
 
 
