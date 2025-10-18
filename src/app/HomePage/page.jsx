@@ -211,7 +211,7 @@ if(!auth) return <div className="mt-4 text-center">Checking</div>
   return  (
     <>
       <NavbarTop />
-      <div className="min-h-screen w-full flex-col justify-center pt-12 pb-16 bg-pink-50
+      <div className="min-h-screen w-full flex-col justify-center pt-8 pb-16 bg-pink-50
        relative">
         {/* pt-16 and pb-16 add space for fixed navbars */}
         <div className="text-center w-full flex  mt-6 max-w:md mx-auto">
@@ -247,7 +247,7 @@ if(!auth) return <div className="mt-4 text-center">Checking</div>
       </div>
 
 
-      <div className="w-full bg-[#FF1658] flex p-1 items-center justify-center gap-5 mt-2">
+      <div className="w-full bg-[#FF5708] flex p-1 items-center justify-center gap-5 mt-2">
         <p className="md:text-lg text-xs text-white font-semibold">Get Free Coupon For Your Next Order</p>
         <button className="md:text-lg text-xs px-3 py-2 bg-black underline text-white cursor-pointer rounded-2xl">show now</button>
       </div>
@@ -280,7 +280,7 @@ if(!auth) return <div className="mt-4 text-center">Checking</div>
  <svg className="fixed bottom-0 left-0 w-full h-[70%]"
           viewBox="0 0 1440 320" preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg">
-          <path fill="#FF1658"
+          <path fill="#FF5708"
             fillOpacity="1" d="M0,160 C360,320 1080,0 1440,160 L1440,320 L0,320 Z"/>
         </svg>
 
