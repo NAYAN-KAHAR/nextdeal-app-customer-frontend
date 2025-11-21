@@ -135,18 +135,18 @@ const ProfilePage = () => {
    
       <NavbarTop />
       <div className="min-h-screen w-full flex-col justify-center pt-12 pb-16
-       bg-pink-50 relative">
+       bg-gray-100 relative">
   
-        <div className="text-center w-full flex  mt-6 max-w:md mx-auto"></div>
+         <div className="w-full p-2  bg-[#17186C] rounded-b-2xl">
+                      
+           
+      </div>
 
-    <div className="w-full bg-[#FF1658] flex p-2 items-center justify-center gap-5">
-      <p className="md:text-lg text-xs text-white font-semibold">Get Free Coupon  discount For Your Next Order</p>
-    </div>
-        
+ 
     
   {/* Profile form */}
 <div className="w-full flex justify-between items-center p-4 md:p-6 ">
-    <div className="z-50 bg-white p-4 w-full max-w-md mx-auto rounded-2xl ">
+    <div className="z-50 bg-[#FFE7D3] p-4 w-full max-w-md mx-auto rounded-2xl ">
 
       
       <div className="flex justify-between items-center">
@@ -159,40 +159,41 @@ const ProfilePage = () => {
       </div>
 
     <div className="mt-6">
-      <label htmlFor="fullName" className="text-sm font-medium mb-1">Full Name</label>
+      <label htmlFor="fullName" className="text-sm font-medium mb-1 text-gray-700">Full Name</label>
       <input type="text" id="fullName" placeholder="Nayan Kahar" value={name}
        onChange={(e) => setName(e.target.value)}
-        className="p-3 rounded-xl w-full border border-gray-300 focus:outline-none focus:ring-2
-        focus:ring-red-500 transition" />
+        className="p-2.5 rounded-xl w-full border border-gray-300 focus:outline-none focus:ring-2
+        focus:ring-black transition" />
     </div>
 
  
     <div className="mt-4">
-      <label htmlFor="phone" className="text-sm font-medium mb-1">Phone Number</label>
+      <label htmlFor="phone" className="text-sm font-medium mb-1  text-gray-700">Phone Number</label>
       <input type="tel" id="phone"   readOnly
         placeholder="9874562879"  value={user?.mobile}
-        className="p-3 rounded-xl w-full border border-gray-300 focus:outline-none transition"/>
+        className="p-2.5 rounded-xl text-gray-700 w-full border border-gray-300 focus:outline-none transition"/>
     </div>
 
 
     <div className="mt-4">
-      <label htmlFor="email" className="text-sm font-medium mb-1"> Email Address</label>
+      <label htmlFor="email" className="text-sm font-medium mb-1  text-gray-700"> Email Address</label>
       <input type="email" id="email" placeholder="Enter email adress" value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="p-3 rounded-xl w-full border border-gray-300 focus:outline-none focus:ring-2
-        focus:ring-red-500 transition" />
+        className="p-2.5 rounded-xl w-full border border-gray-300 focus:outline-none focus:ring-2
+        focus:ring-black transition" />
     </div>
 
 
     <div className="mt-4">
-      <label htmlFor="address" className="text-sm font-medium mb-1">Address</label>
+      <label htmlFor="address" className="text-sm font-medium mb-1  text-gray-700">Address</label>
       <input type="text" id="address"  placeholder="Enter your adress" value={address}
         onChange={(e) => setAdress(e.target.value)}
-        className="p-3 rounded-xl w-full border border-gray-300 focus:outline-none focus:ring-2
-        focus:ring-red-500 transition"/>
+        className="p-2.5 rounded-xl w-full border border-gray-300 focus:outline-none focus:ring-2
+        focus:ring-black transition"/>
     </div>
 
-   <button onClick={handleSaveBtn} className="mt-4 bg-[#FF1658] hover:bg-red-400 transition px-8 py-2
+   <button onClick={handleSaveBtn} className="mt-4 bg-black  
+   hover:bg-[#17186C] transition px-10 py-2
     rounded-2xl text-white cursor-pointer">
       {loading ? 'Saving' :'Save'}</button>
     </div>
@@ -200,12 +201,6 @@ const ProfilePage = () => {
 
 
 
- <svg className="fixed bottom-0 left-0 w-full h-[70%]"
-          viewBox="0 0 1440 320" preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg">
-          <path fill="#FF1658"
-            fillOpacity="1" d="M0,160 C360,320 1080,0 1440,160 L1440,320 L0,320 Z"/>
-        </svg>
 
 </div>
  <NavbarBottom />

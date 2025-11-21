@@ -200,34 +200,32 @@ useEffect(() => {
   return (
     <>
       <NavbarTop />
-      <div className="min-h-screen w-full flex-col justify-center pt-12 pb-16 bg-pink-50 relative">
+      <div className="min-h-screen w-full flex-col justify-center pt-12 pb-16 bg-white relative">
        
-        <div className="text-center w-full flex  mt-6 max-w:md mx-auto">
-
-      {/* upper navbar */}
-        <div className="w-full p-2 flex justify-center items-center">
+        <div className="w-full p-2  bg-[#17186C] pt-6 rounded-b-2xl">
+                      
             <div className="relative w-full md:w-[400px]">
-                <input type="text" placeholder="Search your Coupon" onChange={handleInput}
-                className="w-full pl-10 pr-4 py-2 md:py-3 rounded-2xl border border-gray-700 
-                outline-none focus:ring-2 focus:ring-rose-300 text-sm"
-                />
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={20} />
+                <input type="text" placeholder="Search your shop"
+                     className="w-full pl-10 pr-4 py-2 rounded-2xl border
+                     border-white outline-none focus:ring-2 focus:ring-white 
+                   focus:border-none text-sm text-black bg-white" onChange={handleInput}
+                   />
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2
+                     text-black" size={20} />
             </div>
-        </div>
-          
 
-  </div>
+            <div className="w-full flex p-1 items-center justify-between gap-5 mt-3">
+            <p className="md:text-lg text-xs text-white font-semibold">Get Free Coupon For Your Next Order</p>
+            <Link href={'/FreeCoupon'} className="md:text-lg text-xs px-5 py-1.5 bg-red-600 
+             text-white cursor-pointer rounded-2xl font-bold">show now</Link>
+           </div>
+      </div>
 
-
-    <div className="w-full bg-[#FF1658] flex p-2 items-center justify-center gap-5">
-      <p className="md:text-lg text-[12px] text-white font-semibold">Shop Now Free Coupon and get discount in your first Order</p>
-      
-    </div>
         
 
 
 <div className="p-4 text-2xl font-bold mt-2">
-    <div className="flex rounded-2xl p-2 shadow-2xl bg-white">
+    <div className="flex rounded-2xl p-2 shadow-sm bg-[#E6EEFF]">
     <img src={shop.shopImg ? shop.shopImg : 'https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg'} alt="shop image" className="w-20 h-20 rounded-full object-cover"/>
     <div className="flex flex-col justify-between flex-1">
       {/* Shop name and address */}
@@ -246,10 +244,11 @@ useEffect(() => {
 <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 p-4 md:p-6">
 {allCoupons && allCoupons.map((value, i) => {
     return [...Array(Number(value.freeCoupon))].map((_,i) => {
-      return  <div key={i} className="p-3 bg-white shadow-2xl rounded-2xl flex justify-between z-50">
+      return  <div key={i} className="p-3 bg-[#E6EEFF] shadow-sm rounded-2xl flex justify-between z-50">
             <p className="text-sm">{value.couponName}</p>
-            <button onClick={() =>handleRedeemClick (value)} className="bg-[#FF1658] px-3 py-1 rounded-2xl cursor-pointer
-            hover:bg-red-400 transition text-white font-semibold">Redeem</button>
+            <button onClick={() =>handleRedeemClick (value)} 
+            className="bg-[#17186C] px-3 py-1 rounded-2xl 
+            text-white font-semibold">Redeem</button>
         </div>
 
     })
@@ -262,12 +261,6 @@ useEffect(() => {
 </div>
 
 
- <svg className="fixed bottom-0 left-0 w-full h-[70%]"
-          viewBox="0 0 1440 320" preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg">
-          <path fill="#FF1658"
-            fillOpacity="1" d="M0,160 C360,320 1080,0 1440,160 L1440,320 L0,320 Z"/>
-        </svg>
 
       </div>
       <NavbarBottom />

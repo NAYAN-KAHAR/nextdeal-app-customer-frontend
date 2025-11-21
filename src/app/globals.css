@@ -16,3 +16,53 @@ body {
   font-weight:400;
   font-style: normal;
 }
+
+
+
+/* In your global CSS file */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scroll-container {
+  overflow-x: auto;
+  overflow-y: auto;/* <-- important */
+}
+
+
+.cuisines {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+
+/* Custom scrollbar for all scrollable elements */
+::-webkit-scrollbar {
+  width: 6px;              /* 👈 makes scrollbar thin */
+}
+
+/* Scrollbar track (background area) */
+::-webkit-scrollbar-track {
+  background: transparent;  /* or use rgba(255,255,255,0.1) for subtle track */
+  border-radius: 10px;
+}
+
+/* Scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background-color: white;   /* 👈 scrollbar color */
+  border-radius: 10px;
+}
+
+/* On hover (optional, adds a glow effect) */
+::-webkit-scrollbar-thumb:hover {
+  background-color: white;
+}
+
+/* Firefox (non-webkit browsers) */
+* {
+  scrollbar-width: thin;         /* "auto" or "thin" */
+  scrollbar-color: white transparent;  /* thumb color | track color */
+}

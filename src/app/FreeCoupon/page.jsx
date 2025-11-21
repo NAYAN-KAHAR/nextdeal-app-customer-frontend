@@ -87,18 +87,20 @@ const FreeCoupon = () => {
   const [reserveAllCoupons, setReserveAllCoupons] = useState([]);
   const [groupedCoupons, setGroupedCoupons] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
+  const [loader, setLoader] = useState(false);
 
   // console.log(groupedCoupons);
 
   // fetch all shops on homepage
   const getAllShops = async () => {
     try{
+      setLoader(true);
       const res =  await axios.get(`${apiUrl}/api/all-shopkeeper-freecoupons/`, 
         {withCredentials:true});
-       console.log(res.data);
+      //  console.log(res.data);
       const newCoupons = [...res.data.allFreeCoupons];
       setAllCoupons(newCoupons);
+      setLoader(false);
       // console.log(newCoupons.length); // ✅ correct value
 
 
@@ -165,81 +167,75 @@ useEffect(() => {
   return (
     <>
       <NavbarTop />
-      <div className="min-h-screen w-full flex-col justify-center pt-12 pb-16 bg-pink-50 relative">
-        {/* pt-16 and pb-16 add space for fixed navbars */}
-        <div className="text-center w-full flex  mt-6 max-w:md mx-auto">
-
-      {/* upper navbar */}
-        <div className="w-full p-2 flex justify-center items-center">
-            <div className="relative w-full md:w-[400px]">
-                <input type="text" placeholder="Search your Coupon"
-                 value={searchTerm}
-                 onChange={handleCouponSerach}
-
-                className="w-full pl-10 pr-4 py-2 md:py-3 rounded-2xl border border-gray-700
-                 outline-none focus:ring-2 focus:ring-rose-500 focus:border-none text-sm"
-                />
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-rose-500" size={20} />
-            </div>
-        </div>
-          
-
-  </div>
+      <div className="min-h-screen w-full flex-col justify-center pt-12 pb-16 bg-white relative">
 
 
-    <div className="w-full bg-[#FF1658] flex p-2 items-center justify-center gap-5 mt-2">
-      <p className="md:text-lg text-xs text-white font-semibold">Shop Now with Free Coupon and get discount  in your first Order</p>
-    </div>
-        
-
-
-<div className="md:p-6 p-4 text-2xl font-bold ">All Shop Free Coupons</div>      
-  {/* shopcard */}
-<div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 p-4 md:p-6">
-{/* <div className="w-full flex justify-between items-center p-1.5 md:p-6 flex-col gap-2"> */}
-{groupedCoupons && groupedCoupons.map((value, i) => (
-  <div key={i} className="z-50 bg-white shadow-lg rounded-xl p-3 flex justify-between 
-               transition" >
-
-  <img
-  src={value && value.shopkeeper?.shopImg ? value.shopkeeper.shopImg
-      : 'https://img.freepik.com/premium-vector/twostory-store-shop-with-brick-wall-vector-3d-clipart-isolated-white-background_396616-1044.jpg?semt=ais_hybrid&w=740&q=80' } alt="shop image"
-      className="w-20 h-20 md:w-32 md:h-32 rounded-full object-cover" />
-
-
-    <div className="flex flex-col justify-between flex-1">
-      {/* Shop name and address */}
-      
-       <div className="ml-4">
-           <h2 className="text-md md:text-lg font-semibold mt-1">{value.shopkeeper?.business_name}</h2>
-        <p className="text-sm text-gray-600 mt-1 font-medium">{value.shopkeeper?.address}</p>
-       
-       </div>
-     
-
-      {/* Button aligned bottom-right */}
-      <div className="w-full flex justify-between mt-4 items-center sm:flex-col">
-         <h1 className="ml-4 font-bold">{value?.couponCount} Coupons</h1>
-         <Link href={`/Shop/${value.shopkeeper?.mobile}`} className="py-2 px-2
-          bg-[#FF1658] text-white rounded-2xl text-sm 
-        cursor-pointer transition-all hover:bg-red-500" > Redeem Coupon</Link>
+   <div className="w-full p-2  bg-[#17186C] pt-6 rounded-b-2xl">
+                      
+      <div className="relative w-full md:w-[400px]">
+           <input type="text" placeholder="Search your shop"
+               className="w-full pl-10 pr-4 py-2 rounded-2xl border
+               border-white outline-none focus:ring-2 focus:ring-white 
+             focus:border-none text-sm text-black bg-white" />
+             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2
+                text-black" size={20} />
       </div>
-    
 
-</div>
-
+    <div className="w-full flex p-1 items-center justify-between gap-5 mt-3">
+        <p className="md:text-lg text-xs text-white font-semibold">
+          Free coupon for discount on your first order.
+          </p>
+        <Link href={'/FreeCoupon'} className="md:text-lg text-xs px-5 py-1.5 bg-red-600 
+         text-white cursor-pointer rounded-2xl font-bold">show now</Link>
+     </div>
   </div>
-))}
 
+
+
+
+<div className="md:p-6 p-4 text-xl font-bold ">Free Coupons</div>      
+
+
+
+<div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 p-2 md:p-6">
+  {loader ? (
+    <div className="col-span-full flex justify-center items-center py-10">
+      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  ) : groupedCoupons.length === 0 ? (
+    <div className="col-span-full text-center text-gray-500 text-sm py-8">
+      No free coupons available.
+    </div>
+  ) : (
+    groupedCoupons.map((value, i) => (
+      <div key={i} className="z-50 bg-[#E6EEFF] shadow-lg rounded-xl p-3 flex justify-between transition">
+        <img
+          src={value?.shopkeeper?.shopImg || 'https://img.freepik.com/premium-vector/twostory-store-shop-with-brick-wall-vector-3d-clipart-isolated-white-background_396616-1044.jpg?semt=ais_hybrid&w=740&q=80'}
+          alt="shop image"
+          className="w-20 h-20 md:w-32 md:h-32 rounded-full object-cover"
+        />
+        <div className="flex flex-col justify-between flex-1">
+          <div className="ml-4">
+            <h2 className="text-md md:text-lg font-bold mt-1">{value.shopkeeper?.business_name}</h2>
+            <p className="text-xs text-gray-600 leading-snug font-medium">{value.shopkeeper?.address}</p>
+          </div>
+          <div className="w-full flex justify-between mt-4 items-center sm:flex-col">
+            <h1 className="ml-4 font-bold">{value?.couponCount} Coupons</h1>
+            <Link
+              href={`/Shop/${value.shopkeeper?.mobile}`}
+              className="py-1.5 px-2 bg-[#17186C] text-white rounded-2xl text-sm"
+            >
+              Redeem Coupon
+            </Link>
+          </div>
+        </div>
+      </div>
+    ))
+  )}
 </div>
 
 
- <svg className="fixed bottom-0 left-0 w-full h-[70%]"
-          viewBox="0 0 1440 320" preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg">
-          <path fill="#FF1658"
-            fillOpacity="1" d="M0,160 C360,320 1080,0 1440,160 L1440,320 L0,320 Z"/>
-        </svg>
+
 
 
       </div>

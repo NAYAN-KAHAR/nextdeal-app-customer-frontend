@@ -5,10 +5,10 @@ import { IoMenuSharp, IoCloseSharp } from 'react-icons/io5';
 import { IoHomeSharp, IoPersonSharp, IoPricetagSharp, IoBookmarkSharp, IoLogOutSharp } from 'react-icons/io5';
 import axios from 'axios';
 import { ToastContainer, toast} from  'react-toastify';
-
+import { MdOutlineKeyboardBackspace } from "react-icons/md";
 import { usePathname, useRouter } from 'next/navigation';
 const apiUrl = process.env.NEXT_PUBLIC_CUSTOMER_API_URL;
-
+import { FaCircleUser } from "react-icons/fa6";
 
 const NavbarTop= () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -78,14 +78,14 @@ const NavbarTop= () => {
   return (
     <>
     <ToastContainer />
-     <div className="w-full bg-white shadow-sm z-60 fixed top-0 md:flex-row flex-col justify-center items-center">
-  <div className="w-full px-4 flex justify-between items-center max-w-7xl">
-          <Link href="/">
-            <img src={'/logo.png'} className="w-30 h-13 object-cover"  alt="logo"/>
+     <div className="w-full bg-[#18196D]  z-60 fixed top-0 md:flex-row flex-col justify-center items-center">
+  <div className="w-full px-1 flex justify-between items-center max-w-7xl">
+          <Link href="/HomePage">
+            <img src={'/logo3.png'} className="w-30 h-13 object-cover"  alt="logo"/>
           </Link>
 
 
-      <div className="w-27 md:w-80 md:px-6">
+      {/* <div className="w-27 md:w-80 md:px-6">
         <select name="city" id="city" onChange={handleSelect}
           className="w-full border border-gray-500 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2
            focus:ring-blue-500 text-sm" defaultValue="">
@@ -98,12 +98,31 @@ const NavbarTop= () => {
           <option value="houston">Houston</option>
           <option value="miami">Miami</option>
         </select>
-    </div>
+    </div> */}
 
           {isMobile ? (
-            <div onClick={handleMenuToggle} className="cursor-pointer">
-              {isMenuOpen ? <IoCloseSharp size={30} /> : <IoMenuSharp size={30} />}
-            </div>
+            <div className="cursor-pointer flex gap-3 items-center">
+          <select name="city"  id="city"
+            onChange={(e) =>  handleSelect(e) }
+            className="w-full border border-white rounded-lg px-2 py-[2px] text-black
+              focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs bg-white"
+            defaultValue="" >
+            <option value="" disabled className="text-black bg-white">
+              Choose City
+            </option>
+            <option value="newyork" className="text-black bg-white">New York</option>
+            <option value="losangeles" className="text-black bg-white">Los Angeles</option>
+            <option value="chicago" className="text-black bg-white">Chicago</option>
+            <option value="houston" className="text-black bg-white">Houston</option>
+            <option value="miami" className="text-black bg-white">Miami</option>
+      </select>
+
+    {isMenuOpen ? (
+      <IoCloseSharp size={35} className="text-white" onClick={handleMenuToggle}/>
+    ) : (
+      <FaCircleUser size={38} className="text-white" onClick={handleMenuToggle}/>
+    )}
+  </div>
           ) : (
             <div className="flex items-center gap-8 font-bold">
 
@@ -140,20 +159,34 @@ const NavbarTop= () => {
           )}
         </div>
 </div>
-        {/* mobile dropdown */}
-        {isMobile && isMenuOpen && (
-          <div className="fixed top-16 right-0 w-[70%] h-screen bg-white shadow-lg z-100 px-6 py-8
-           flex flex-col gap-6 font-semibold transition-all duration-300 ease-in-out">
-          
-          <div>
-            <img src={userImage ? userImage : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHZRC_JCJG4XCFypC11H549nZXGFvUTJO8qQ&s'}
-             alt="profile-img" className='w-20 h-20 rounded-full'/>
-             <div className='flex justify-between items-center mt-2'>
-              <h1 className='text-lg font-bold'>{userName && userName}</h1>
-              <Link  href={'/Profile'} className='text-xs font-bold text-blue-500 cusor-pointer'
-              onClick={() => setIsMenuOpen(!isMenuOpen)} >Edit</Link>
-             </div>
-          </div>
+
+
+{/* mobile dropdown */}
+
+<div className={` fixed top-0 right-0 w-full  h-screen bg-gray-100 shadow-lg z-100 py-2 p-2
+      flex flex-col gap-6 font-semibold 
+    transform transition-transform duration-500 ease-in-out
+    ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div onClick={handleMenuToggle} className="self-start cursor-pointer">
+      <MdOutlineKeyboardBackspace size={33} className="text-gray-700" />
+    </div>
+
+   <div className='flex items-center justify-between p-4 bg-[#18186C] rounded-xl shadow-xl'>
+       <img src={userImage ? userImage : '/demo_user.jpg'}
+        alt="profile-img"
+        className='w-20 h-20 rounded-full border-4 border-gray-200 shadow-lg'
+      />
+      <div className='flex flex-col items-start'>
+        <h1 className='text-xl font-semibold text-white'>{userName && userName}</h1>
+        <span className='text-sm text-white'>9632587412</span>
+        <Link href={'/Profile'} className='mt-1 text-xs font-semibold text-blue-300 hover:underline'
+         onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          Edit Profile
+        </Link>
+      </div>
+    </div>
+
+
 
             <Link href="/HomePage" className={`py-2 border-b mt-3 flex gap-2 items-center text-gray-700
                hover:text-blue-600 cursor-pointer ${pathname === '/HomePage' ? 'bg-gray-200 text-black':''}`
@@ -191,14 +224,8 @@ const NavbarTop= () => {
             
 
 
-          <div className='fixed bottom-15 flex flex-col gap-2'>
-              <h1 className='text-sm font-bold'>Any Queris Call At</h1>
-              <p className='text-lg font-semibold cusor-pointer'>+917894561239</p>
-             
           </div>
-
-          </div>
-        )}
+        
       
     </>
   );

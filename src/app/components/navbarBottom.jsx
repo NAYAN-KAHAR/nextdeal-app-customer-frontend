@@ -34,32 +34,37 @@ const NavbarBottom = () => {
   return (
     <>
     <ToastContainer />
-    <div className="w-full bg-white shadow-sm z-50 fixed bottom-0 left-0 flex justify-center">
-      <nav className="max-w-md w-full">
+    <div className="w-full bg-white shadow-3xl z-100 fixed bottom-0  rounded-t-3xl
+     flex justify-center border-t-2 border-gray-200">
+      <nav className="max-w-md w-full  shadow-3xl">
         <div className="py-2 flex justify-around items-center">
           {isMobile ? (
             <>
                <Link href={'/HomePage'} className="flex flex-col items-center hover:text-blue-600 cursor-pointer">
-                <img src={'/home.png'} width={22} height={22} className={`${pathname === '/HomePage' ? 'text-blue-600':''}`}  />
-                 <span className={` ${pathname === '/HomePage' ? 'text-blue-600':''} font-bold text-xs mt-1`}>Home</span>
+                <img src={'/home.png'} width={22} height={22} 
+                lassName={`${pathname === '/HomePage' ? 'text-[#18186C]':''}`}  />
+                 <span className={` ${pathname === '/HomePage' ? 'text-[#18186C]':''} font-bold text-xs mt-1`}>Home</span>
               </Link>
 
               <Link href={'/Profile'} className="flex flex-col items-center  hover:text-blue-600 cursor-pointer">
-                <img src='/user.png' width={22} height={22} className={`${pathname === '/Profile' ? 'text-blue-600':''}`}/>
-                <span className={` ${pathname === '/Profile' ? 'text-blue-600':''} font-bold text-xs mt-1`}>Profile</span>
+                <img src='/user.png' width={22} height={22} 
+                className={`${pathname === '/Profile' ? 'text-[#18186C]':''}`}/>
+                <span className={` ${pathname === '/Profile' ? 'text-[#18186C]':''} font-bold text-xs mt-1`}>Profile</span>
               </Link>
 
-              <Link href={'/MyCoupon'} className="flex flex-col items-center hover:text-blue-600 cursor-pointer">
+            <Link href={'/MyCoupon'} className="flex flex-col items-center
+               hover:text-blue-600  cursor-pointer">
                 <img src="/promo-code (1).png" width={22} height={22}
-                 className={`${pathname === '/MyCoupon' || pathname === '/FreeCoupon' ? 'text-blue-600' : ''}
+                 className={`${pathname === '/MyCoupon' || pathname === '/FreeCoupon' ? 'text-[#18186C]' : ''}
                  `}/>
                  <span className={`${pathname === '/MyCoupon' || pathname === '/FreeCoupon' ? 
-                 'text-blue-600' : ''} font-bold text-xs mt-1`} > Coupon </span>
+                 'text-[#18186C]' : ''} font-bold text-xs mt-1`} > Coupon </span>
                  </Link>
 
               <Link href={'/Saved'} className="flex flex-col items-center hover:text-blue-600 cursor-pointer">
-                <img src='/bookmark.png' width={22} height={22}  className={`${pathname === '/Saved' ? 'text-blue-600':''}`}/>
-                <span className={` ${pathname === '/Saved' ? 'text-blue-600':''} font-bold text-xs mt-1`}>Saved</span>
+                <img src='/bookmark.png' width={22} height={22} 
+                 className={`${pathname === '/Saved' ? 'text-blue-600':''}`}/>
+                <span className={` ${pathname === '/Saved' ? 'text-[#18186C]':''} font-bold text-xs mt-1`}>Saved</span>
               </Link>
 
               <div className="flex flex-col items-center text-gray-700 hover:text-red-600 

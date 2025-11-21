@@ -31,13 +31,13 @@ const IntroPage = () => {
       }
     };
 
-    checkAuth();
+    // checkAuth();
   }, [router]);
 
 
 
   return auth ? null : (
-    <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-rose-300 via-pink-00 to-purple-500 text-white overflow-hidden relative">
+    <div className="min-h-screen flex flex-col justify-between overflow-hidden bg-gray-50 relative">
       
       {/* Decorative Top Wave */}
       <div className="absolute top-0 left-0 w-full">
@@ -49,20 +49,21 @@ const IntroPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center z-10 relative">
-        <Image src="/logo.png" alt="Logo" width={160} height={160}
-          className="rounded-full shadow-lg animate-bounce-slow"/>
+      <div className="flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center 
+      z-10 relative">
+        <Image src="/logo3.png" alt="Logo" width={160} height={160}
+          className="rounded-full shadow-lg animate-bounce-slow bg-[#19176C]"/>
 
         <h1 className="mt-6 text-4xl font-extrabold tracking-wide">
           Welcome to <span className="font-extrabold text-black">NEXTDEAL</span>
         </h1>
-        <p className="mt-3 text-lg text-pink-100 max-w-xs">
+        <p className="mt-3 text-lg max-w-xs">
           Discover amazing offers and save more every day!
         </p>
 
         <Link href="/Signup">
-          <button className="mt-10 w-70 bg-white text-rose-600 font-semibold py-3 px-8 rounded-full shadow-md 
-            hover:bg-black hover:text-white transition-all duration-300 cursor-pointer"
+          <button className="mt-10 w-70  font-semibold py-3 px-8
+           rounded-full shadow-md text-white bg-black  transition-all duration-300 cursor-pointer"
           > Get Started </button>
         </Link>
       </div>
