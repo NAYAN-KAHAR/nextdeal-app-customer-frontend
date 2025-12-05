@@ -635,7 +635,7 @@ const handleAddClick = async (id, name, price) => {
       err.response?.data?.error ===
       "You already have items from another restaurant. Please remove them before adding new items."
     ) {
-      setAddItemError(err.response.data?.restaurantName?.business_name);
+      setAddItemError(err?.response.data?.restaurantName?.business_name);
     }
   }
 };
@@ -1025,7 +1025,7 @@ return (
             </Link>
 
             <div className='flex flex-col text-start justify-start items-start'>
-              <h1 className='font-extrabold capitalize'>{value.business_name}</h1>
+              <h1 className='font-extrabold capitalize'>{value?.business_name}</h1>
               <p className='font-semibold text-sm'>{value?.rating} (1.2k+) . 20-30 Mins</p>
               <span className='text-gray-700 font-medium'>pasta, burgers, chinese...</span>
               <p className='text-gray-700 font-medium'>Suri, 1.2Km</p>
@@ -1043,7 +1043,7 @@ return (
               <div className="flex justify-between items-center mb-4">
                 <div className="text-start">
                   <h1 className="text-xl font-bold text-slate-800 capitalize tracking-tight">
-                    {restaurant.business_name || "Unknown"}</h1>
+                    {restaurant?.business_name || "Unknown"}</h1>
                   <p className="text-amber-600 text-xs font-semibold mt-0.5">Opens in 60 mins</p>
                 </div>
                 <IoArrowForward size={26} className="text-slate-500" />
@@ -1221,21 +1221,34 @@ return (
                 
 <h1 className="font-bold mt-6 px-4 text-lg text-start text-gray-700">More on NextDeal</h1>
 
-  <div className="flex justify-between overflow-auto px-4 py-3 scrollbar-hide">
-    <Link href={'/99Page'}  className="min-w-[140px] p-1 rounded-xl border border-gray-200 flex flex-col items-center cursor-pointer hover:shadow-md transition duration-200">
-       <h2 className="text-xs text-gray-700 font-semibold text-center">99 STORE</h2>
-       <p className="text-xs text-red-500 font-semibold text-center">MEAL AT 99</p>
-       <img src="https://images.cnbctv18.com/uploads/2025/07/swiggy-99-store-2025-07-f7718ff6921cf737ca8e736ea3e4bd30.jpg?impolicy=website&width=400&height=225"
-               className="w-full h-16 object-cover rounded-xl"
-                     alt="99 store meal" />
-</Link>
+<div className="flex gap-4 overflow-auto px-4 py-3 scrollbar-hide">
 
-   {/* Combo Offer */}
-   <div className="min-w-[140px] p-1 rounded-xl border border-gray-200 flex flex-col items-center  cursor-pointer hover:shadow-md transition duration-200">
-     <h2 className="text-sm text-gray-700 font-semibold text-center">COMBO OFFER</h2>
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKnO5GtRAAhkzlLuHNE_dZ4Sm-A6o1cjUROg&s" className="w-full h-16 object-cover rounded-xl" alt="Combo Offer" />
-    </div>
- </div>
+  <Link  href={"/99Page"}
+      className="w-[50%] sm:w-[200px] p-1 rounded-xl border border-gray-200 
+                flex flex-col items-center cursor-pointer 
+                hover:shadow-md transition duration-200" >
+      <h2 className="text-xs text-gray-700 font-semibold text-center">99 STORE</h2>
+      <p className="text-xs text-red-500 font-semibold text-center">MEAL AT 99</p>
+
+      <img  src="https://images.cnbctv18.com/uploads/2025/07/swiggy-99-store-2025-07-f7718ff6921cf737ca8e736ea3e4bd30.jpg"
+        className="w-full h-auto rounded-xl"  alt="99 store meal"/>
+  </Link>
+
+  {/* Combo Offer */}
+  <div className="w-[50%] sm:w-[200px] p-1 rounded-xl border border-gray-200 
+               flex flex-col items-center cursor-pointer 
+               hover:shadow-md transition duration-200">
+    <h2 className="text-sm text-gray-700 font-semibold text-center">
+      COMBO OFFER
+    </h2>
+
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKnO5GtRAAhkzlLuHNE_dZ4Sm-A6o1cjUROg&s"
+      className="w-full h-auto rounded-xl"
+      alt="Combo Offer"
+    />
+  </div>
+</div>
+
             
 
 

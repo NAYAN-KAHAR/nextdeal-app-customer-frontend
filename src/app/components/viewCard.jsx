@@ -217,6 +217,7 @@ const handleDecrease = async (itemId) => {
     );
 
     fetchViewCardOrder();
+
   } catch (err) {
     console.log("Error decreasing:", err);
   }
@@ -454,13 +455,12 @@ const handlePlaceOrder = async () => {
        {orderData , addressFormat, deliveryType, tips, instructions, deliveryFee},  {withCredentials:true},);
       
        console.log(res.data);
-       
-       Swal.fire({
-            title: 'Done!',
-            text: 'Successfully Placed Order',
-            icon: 'success',
-            confirmButtonText: 'Ok'
-          });
+      //  Swal.fire({
+      //       title: 'Done!',
+      //       text: 'Successfully Placed Order',
+      //       icon: 'success',
+      //       confirmButtonText: 'Ok'
+      //     });
       setTimeout(() => router.push('/checkoutPage'));
   }catch(err){
     console.log(err);
@@ -552,7 +552,7 @@ if (!isLoaded) {
             onClick={() => setIsViewClick(false)} />
 
          <h1 className="text-gray-800 font-bold uppercase">
-           {resName.business_name || 'Restaurant'}
+           {resName?.business_name || 'Restaurant'}
            </h1>
       </div>
 

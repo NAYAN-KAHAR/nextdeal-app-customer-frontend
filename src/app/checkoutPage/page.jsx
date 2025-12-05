@@ -21,6 +21,7 @@ import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { GoogleMap, Marker, useJsApiLoader,OverlayView } from "@react-google-maps/api";
 import { FiSearch } from 'react-icons/fi';
 import { FaLocationArrow } from "react-icons/fa6";
+import { load } from "@cashfreepayments/cashfree-js";
 
 const libraries = ["places"];
 
@@ -44,8 +45,10 @@ const CheckoutPage = () => {
   const [restaurantDetails, setRestaurantDetails] = useState();
   const [locationDetails, setLocationDetails] = useState();
   const [billDetails, setBillDetails] = useState();
-  const  [tips, setTips] = useState(0);
-  
+  const [tips, setTips] = useState(0);
+  const [orderId, setOrderId] = useState('');
+  const [cfLoaded, setCfLoaded] = useState(false);
+
 
  const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -54,17 +57,20 @@ const CheckoutPage = () => {
  });
 
 
+ // getch process to carts food items
 const checkoutGetFoodData = async () => {
   try {
       const res = await axios.get(`${apiUrl}/api/get-checkout-data-customer`, {
         withCredentials: true,
       });
       console.log('carts-data =>',res.data.checkoutData);
+      setOrderId(res.data.checkoutData._id);
       setRestaurantDetails(res.data.checkoutData.restaurantId);
       setLocationDetails(res.data.checkoutData.deliveryAddress);
       setTips(res.data.checkoutData.tip);
       setBillDetails(res.data?.checkoutData?.pricing)
       console.log(restaurantDetails);
+      
   } catch (err) {
     console.log(err);
   }
@@ -75,34 +81,6 @@ useEffect(() => {
   checkoutGetFoodData();
 }, []);
 
-
-
-// calculate toatl price for place order
-useEffect(() => {
-  const calculateTotal = () => {
-    let total = 0;
-
-    orderData.forEach((item) => {
-      const food = item.FoodSubCategory || item.addOn;
-      if (!food) return; 
-
-      const priceAfterDiscount = (food.price || 0) - (food.Discount || 0); 
-      total += priceAfterDiscount * (item.count || 1);
-    });
-    setTotalPrice(total);
-  };
-
-  calculateTotal();
-}, [orderData]);
-
-
-
-
-
-const handleACustomerAddress = () => {
-  console.log('clicked');
-  setIsAddressClick(true);
-};
 
 
 // You use the place_id with PlacesService.getDetails() to fetch the full details
@@ -321,34 +299,68 @@ const handleIsMylocBtn = async () => {
 }
 
 // taking food order logic  
-const hanldePayBtn = async () => {
-  try{
-    console.log('total', totalPrice);
-    //  const res =  await axios.post(`${apiUrl}/api/customer-place-order`,
-    //    {orderData , addressFormat, deliveryType, tips, instructions},  {withCredentials:true},);
+// const hanldePayBtn = async (totalPrice) => {
+
+//   if(!totalPrice || !orderId) return;
+//   if (paymentType ==='COD') return alert('COD not valid right now');
+
+//   try{
+//     console.log('total', totalPrice);
+//      const res =  await axios.post(`${apiUrl}/api/customer-order-payment`,
+//       {totalPrice, orderId},  {withCredentials:true},);
       
-    //    console.log(res.data);
+//     //    console.log(res.data);
        
-       Swal.fire({
-            title: 'Done!',
+//        Swal.fire({
+//             title: 'Done!',
+//             text: 'Successfully Placed Order',
+//             icon: 'success',
+//             confirmButtonText: 'Ok'
+//           });
+//   }catch(err){
+//     console.log(err);
+//     if(err?.response?.data) {
+//     //   setError(err.response?.data?.error);
+//     }
+    
+//   }
+// }
+
+const hanldePayBtn = async (totalPrice) => {
+  try {
+    if (!totalPrice || !orderId) return alert("Invalid order");
+
+    // const res = await axios.post(
+    //   `${process.env.NEXT_PUBLIC_CUSTOMER_API_URL}/api/customer-order-payment`,
+    //   { totalPrice, orderId },
+    //   { withCredentials: true }
+    // );
+
+    // const { paymentSessionId } = res.data;
+    // if (!paymentSessionId) return alert("Failed to get payment session");
+
+    // // Load Cashfree SDK and trigger checkout
+    // const cashfree = await load({ mode: "sandbox" }); // 'prod' for production
+    // cashfree.checkout({
+    //   paymentSessionId,
+    //   redirectTarget: "_self", // or "_blank" if you want a new tab
+    // });
+
+     Swal.fire({
+             title: 'Done!',
             text: 'Successfully Placed Order',
             icon: 'success',
-            confirmButtonText: 'Ok'
+             confirmButtonText: 'Ok'
           });
-      setTimeout(() => router.push('/Restaurents'), 100);
-  }catch(err){
-    console.log(err);
-    if(err?.response?.data) {
-    //   setError(err.response?.data?.error);
-    }
-    
-  }
-}
 
+  } catch (err) {
+    console.error("Payment initiation failed:", err);
+    alert("Payment initiation failed");
+  }
+};
 
 
 if (!isLoaded) {
-  // Optional: you can return a loader or a placeholder
   return <div className="h-screen w-full flex justify-center items-center"><Loader /></div>;
 }
 
@@ -415,7 +427,28 @@ if (!isLoaded) {
          </p>
 
           {/* Map */}
-          <div className="w-full h-40 bg-gray-300 rounded-lg mt-3"></div>
+        
+
+            <div className="w-full h-40 rounded-lg mt-3 overflow-hidden">
+    {locationDetails?.coordinates ? (
+
+          <GoogleMap
+            mapContainerStyle={{ width: "100%", height: "100%" }}
+            center={locationDetails.coordinates}
+            zoom={16}
+            options={{
+              streetViewControl: false,
+              mapTypeControl: false,
+              fullscreenControl: false,
+            }}
+          >
+            <Marker position={locationDetails.coordinates} title="Delivery Location" />
+          </GoogleMap>
+        ) : (
+      <div className="w-full h-full bg-gray-300 flex items-center justify-center">No location</div>
+    )}
+  </div>
+
         </div>
 
 
@@ -449,7 +482,7 @@ if (!isLoaded) {
           {/* Online */}
           <div className={`flex items-center justify-between py-3 cursor-pointer
 
-            ${paymentType === 'online'?'border-1 border-orange-500 rounded-2xl' : ''}`}
+            ${paymentType === 'online'?'border-2 border-orange-500 rounded-2xl' : ''}`}
           onClick={() => setPaymentType('online')}>
 
             <div className="flex items-center gap-3 p-1">
@@ -461,7 +494,7 @@ if (!isLoaded) {
 
           {/* COD */}
           <div className={`flex items-center justify-between py-3 cursor-pointer
-            ${paymentType === 'COD'?'border-1 border-orange-500 rounded-2xl' : ''}`}
+            ${paymentType === 'COD'?'border-2 border-orange-500 rounded-2xl' : ''}`}
            onClick={() => setPaymentType('COD')}>
             <div className="flex items-center gap-3 p-1">
               <FaMoneyBillWave className="text-green-600" size={30} />
@@ -505,7 +538,8 @@ if (!isLoaded) {
       {/* STICKY BOTTOM BUTTON */}
       <div className="fixed bottom-0 left-0 w-full bg-white p-4 shadow-xl border-t">
         <button className="w-full bg-orange-500 text-white py-3 rounded-xl text-lg 
-        font-semibold hover:bg-orange-600 transition cursor-pointer" onClick={hanldePayBtn}> 
+        font-semibold hover:bg-orange-600 transition cursor-pointer" 
+        onClick={() => hanldePayBtn(billDetails.total)}> 
           Place Order • ₹{billDetails && billDetails.total}
         </button>
       </div>
