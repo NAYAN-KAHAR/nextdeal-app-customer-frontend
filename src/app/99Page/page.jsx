@@ -13,7 +13,7 @@ import { TbPointFilled } from "react-icons/tb";
 import { CiSearch } from "react-icons/ci";
 
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 const apiUrl = process.env.NEXT_PUBLIC_CUSTOMER_API_URL;
 
@@ -26,7 +26,7 @@ import ViewCardItem from '../components/viewCard';
 
 const NinetiNinePage = () => {
 
-  const searchParams = useSearchParams();
+ 
   const router = useRouter();
 
   const [auth, setAuth] = useState(false);
