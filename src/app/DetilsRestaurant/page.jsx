@@ -10,6 +10,9 @@ import { RxCross2 } from "react-icons/rx";
 import { FiBookmark } from "react-icons/fi";
 import { MdOutlineReport, MdArrowRight } from "react-icons/md";
 import { TbPointFilled } from "react-icons/tb";
+import { IoIosTime } from "react-icons/io";
+import { CiLocationOn } from "react-icons/ci";
+
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
@@ -50,7 +53,7 @@ const RestaurantsDetails = () => {
   const [subFoodCategory, setSubFoodCategory] = useState([]);
   const [allSubFoodCategory, setAllSubFoodCategory] = useState([]);
 
-  const [FoodType, setFoodType] = useState('all');
+  const [FoodType, setFoodType] = useState('All');
   const [openMenu, setOpenMenu] = useState(false);
 
   // const [itemCount, setItemCount] = useState(1);
@@ -67,8 +70,8 @@ const RestaurantsDetails = () => {
 
   const [isViewClick, setIsViewClick] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
-
+  const [filterLoader, setFilterLoader] = useState(false);
+  const [foodItems, setFoodItems] = useState([]);
 
  // State: store all open category IDs
  const [openCategories, setOpenCategories] = useState([]);
@@ -168,11 +171,19 @@ const fetchAllCategory = async (id) => {
   
     setSubFoodCategory(res.data.foodSubCategory);
     setAllSubFoodCategory(res.data.foodSubCategory);
-
+    const NinetiNinePrice = res.data.foodSubCategory.filter((v) => {
+      return 100 > v.price - (v.Discount || 0);
+    })
+    console.log('NinetiNinePrice', NinetiNinePrice);
+    setFoodItems(NinetiNinePrice);
+    
+    foodItems
   }catch(err){
      console.log(err);
   }
 }
+
+
  
 // fetch recommandation resturants
 
@@ -194,7 +205,7 @@ useEffect(() => {
   if(selectVegType){
     setFoodType(selectVegType);
   }else{
-    setFoodType('all');
+    setFoodType('All');
   };
 
   if (!id) return;
@@ -224,28 +235,32 @@ useEffect(() => {
   // All Filter veg and non veg, rating ,price high to  low
 useEffect(() => {
   if (!allSubFoodCategory.length) return;
+  setFilterLoader(true);
+  setTimeout(() => {
+    let filtered = [];
 
-  let filtered = [];
+    if (FoodType === 'All restaurants' || FoodType === 'Pure veg restaurants only') {
+      filtered = allSubFoodCategory.filter((v) => v.foodType === "Veg");
+    } 
+    else if (FoodType === 'NonVeg') {
+      filtered = allSubFoodCategory.filter((v) => v.foodType === "Non Veg");
+    }
+    else if (FoodType === '300-600') {
+      filtered = allSubFoodCategory.filter((v) => v.price >= 300 && v.price <= 600);
+    }
+    else if (FoodType === 'less 300') {
+      filtered = allSubFoodCategory.filter((v) => v.price <= 300);
+    }
+     
+    else {
+      filtered = allSubFoodCategory;
+    }
 
-  if (FoodType === 'All restaurants' || FoodType === 'Pure veg restaurants only') {
-    filtered = allSubFoodCategory.filter((v) => v.foodType === "Veg");
-  } else if (FoodType === 'NonVeg') {
-    filtered = allSubFoodCategory.filter((v) => v.foodType === "Non Veg");
-    console.log('filterd nonVeg', filtered);
-  }else if(FoodType === '300-600'){
-    filtered = allSubFoodCategory.filter((v) => v.price >= 300 && v.price <=600);
-     console.log('filterd 300-600', filtered);
-  }else if(FoodType === 'less 300'){
-    filtered = allSubFoodCategory.filter((v) => v.price <= 300 );
-     console.log('filterd less 300', filtered);
-  }
-   else {
-    filtered = allSubFoodCategory;
-  }
+    setSubFoodCategory(filtered);
+    setFilterLoader(false);
+  }, 1000); // 0.5 sec delay so loader works properly
 
-  setSubFoodCategory(filtered);
-}, [FoodType, allSubFoodCategory]);
-
+}, [FoodType]);
 
 
 
@@ -263,6 +278,7 @@ const toggleCategory = (categoryId) => {
 
 
 
+// food item add button logic here 
 const handleAddClick = async (id, name, price) => {
   if (addItemError) return;
 
@@ -344,6 +360,8 @@ const handleDecrease = async (id) => {
     await axios.post(`${apiUrl}/api/add-food-item-view-cards`, updatedData, {
       withCredentials: true,
     });
+   
+     console.log('updatedData', updatedData);
   } catch (err) {
     console.log(err.response);
   }
@@ -420,17 +438,22 @@ const handleSearch = (e) => {
 
 // Debounced search
 useEffect(() => {
+   setFilterLoader(true);
   const timer = setTimeout(() => {
+    let filtered;
     if (searchTerm) {
-      const filtered = allSubFoodCategory.filter((item) =>
+       filtered = allSubFoodCategory.filter((item) =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSubFoodCategory(filtered);
     } else {
-      setSubFoodCategory(allSubFoodCategory);
+      filtered = allSubFoodCategory;
     }
-  }, 400);
 
+    setSubFoodCategory(filtered);
+    setFilterLoader(false); 
+  }, 400);
+ 
   return () => clearTimeout(timer); 
 }, [searchTerm, allSubFoodCategory]);
 
@@ -441,8 +464,9 @@ const handleViewClick  = (response) => {
 }
 
 
+
 // console.log('itemsState', itemsState);
-if(loading || !auth) {
+if(loading || !auth ) {
   return (
     <>
       {/* Top Navbar Skeleton */}
@@ -508,13 +532,7 @@ if(loading || !auth) {
         ))}
     </div>
 
-      {/* Bottom Navbar Skeleton */}
-      <div className="fixed bottom-0 w-full h-20 bg-gray-200 flex items-center justify-around
-       px-4 mt-2 rounded-t-3xl">
-        {Array(5).fill('').map((_, i) => (
-            <Skeleton key={i} height={40} width={60} />
-          ))}
-      </div>
+     
     </>
   );
 }
@@ -526,35 +544,65 @@ return (
      <div className="min-h-screen w-full flex-col justify-center relative bg-white">
      <div className="text-center w-full md:w-1/2  flex flex-col max-w:md mx-auto">
         
-    <div className="bg-black h-55 rounded-b-4xl">
-        <div className="flex justify-between items-center p-2">
-         <Link href={'/Restaurents'}><IoIosArrowRoundBack size={36}
-            className="text-start text-white cursor-pointer"/></Link>
+ <div
+  className="h-55 rounded-b-4xl relative overflow-hidden"
+  style={{
+    backgroundImage:
+      "url('https://img.freepik.com/premium-vector/hand-drawn-indian-food-illustration_98292-44034.jpg')",
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    filter: 'brightness(95%)', // slightly darker for contrast
+  }}
+>
+ 
+  <Link href={'/Restaurents'}>
+    <div className="absolute top-4 left-4 w-11 h-11 flex items-center justify-center
+                    bg-black bg-opacity-50 rounded-full shadow-md cursor-pointer">
+      <IoIosArrowRoundBack size={28} className="text-white" />
+    </div>
+  </Link>
 
-          <FaCircleUser size={33} className='text-white cursor-pointer mt-1'/>     
-        </div> 
+  <div className="absolute top-4 right-4 w-11 h-11 flex items-center justify-center
+                  bg-black bg-opacity-50 rounded-full shadow-md cursor-pointer">
+    <FaCircleUser size={28} className="text-white" />
+  </div>
 
 
-         <div className="p-4 w-[90%] h-33 bg-white rounded-2xl mx-auto mt-6 shadow-2xl ">
-           <div className="flex justify-between items-center">
-              <div className="flex flex-col justify-satrt text-start">
-                  <h1 className="font-extrabold text-xl capitalize">
-                  {restaurantDetails && restaurantDetails.business_name}</h1>
-                <p className="text-gray-600">30 to 50 min | <span>suri</span></p>
-           </div>
+{/* Restaurant info card */}
+<div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-md
+                bg-black/80 backdrop-blur-md rounded-3xl p-5 shadow-2xl flex justify-between items-center">
+  
+  {/* Left: Restaurant details */}
+  <div className="flex flex-col justify-start items-start">
+    <h1 className="font-extrabold text-2xl text-white capitalize">
+      {restaurantDetails?.business_name}
+    </h1>
+    <div className="flex items-center gap-3 mt-2 text-white/80 text-sm">
+      <div className="flex items-center gap-1">
+        <IoIosTime size={14} /> <span>30-50 min</span>
+      </div>
+      <span>•</span>
+      <div className="flex items-center gap-1">
+        <CiLocationOn size={14} /> <span>Suri</span>
+      </div>
+    </div>
+  </div>
 
-            <div className="">
-             <button className=" bg-green-700 text-white rounded-4xl px-3 py-1
-               flex items-center justify-center gap-1">
-                <span>4.2</span> 
-                 <IoIosStar size={14} />
-               </button>
-             <p className="text-gray-600 text-sm">30 ratings</p>
-            </div>
-       </div>
-   </div>
-            
- </div>
+  {/* Right: Rating */}
+  <div className="flex flex-col items-end">
+    <div className="flex items-center gap-1 bg-green-500 text-white px-3 py-1 rounded-full shadow-lg">
+      <span className="font-semibold text-sm">{4.2}</span>
+      <IoIosStar size={14} />
+    </div>
+    <p className="text-white/70 text-xs mt-1">30 ratings</p>
+  </div>
+</div>
+
+
+
+
+</div>
 
 
 
@@ -580,6 +628,14 @@ return (
 {/* Start FIlter */}
  <div className="flex items-center gap-3 overflow-x-auto px-2 py-2 scrollbar-hide">
 
+ <div className={`flex items-center gap-1 px-4 py-1.5  rounded-lg  shadow-sm whitespace-nowrap 
+    cursor-pointer ${FoodType === 'All' ? 'border border-orange-700 text-orange-500':
+    'border border-gray-400 text-gray-800'}`}>
+    <p className="text-sm font-medium"
+    onClick={() => setFoodType('All')}>All</p>
+  </div>
+
+
 
 <div className="flex items-start gap-1 px-3 py-2 rounded-xl border border-gray-400 ">
   <span className="text-gray-600 text-sm font-medium">Veg</span>
@@ -588,7 +644,7 @@ return (
       checked={FoodType === 'All restaurants' || FoodType === 'Pure veg restaurants only'}
       onChange={() => setFoodType(
           FoodType === 'All restaurants' || FoodType === 'Pure veg restaurants only'
-            ? 'all' : 'All restaurants' ) }/>
+            ? 'All' : 'All restaurants' ) }/>
     <div className="w-10 h-5 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition duration-300"></div>
     <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition peer-checked:translate-x-5"></div>
   </label>
@@ -601,7 +657,7 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
   <span className="text-gray-600 text-sm font-medium">NonVeg</span>
   <label className="relative inline-flex items-center cursor-pointer">
     <input type="checkbox" className="sr-only peer" checked={FoodType === 'NonVeg'}
-        onChange={() => setFoodType(FoodType === 'NonVeg' ? 'all' : 'NonVeg') }/>
+        onChange={() => setFoodType(FoodType === 'NonVeg' ? 'All' : 'NonVeg') }/>
     <div className="w-10 h-5 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition duration-300"></div>
     <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition peer-checked:translate-x-5"></div>
   </label>
@@ -639,7 +695,17 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
 {/* *************************************************************************************** */}
 
 {/* started 99 food items */}
-<div className="p-3 bg-gray-50 ">
+{!loading && filterLoader ? (<>
+ {/* Deals / Offers */}
+      <div className="w-full bg-gray-200 flex items-center justify-between px-2 mt-2 gap-2 pb-4">
+        <div className="w-full rounded-2xl">
+          <Skeleton height={88} width="100%" />
+        </div>
+        <div className="w-full rounded-2xl">
+          <Skeleton height={88} width="100%" />
+        </div>
+      </div>
+</>):(<div className="p-3 bg-gray-50 ">
   <div className="flex justify-between items-center mb-3 py-3">
     <h1 className="text-xl font-bold text-gray-900">99 Store</h1>
      <span onClick={() => setIsFoodOpen(!isFoodOpen)}>
@@ -653,12 +719,12 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
    {isFoodOpen && (
      <div className="w-full overflow-x-auto py-1 scrollbar-hide">
         <div className="flex gap-4 w-max">
-         {foodItems.map(({ id, name, price }) => (
-         <div  key={id} className="w-[160px] flex-shrink-0 bg-white rounded-2xl shadow-md
+         {foodItems.map(({ _id, name, price,image, Discount }) => (
+         <div  key={_id} className="w-[160px] flex-shrink-0 bg-white rounded-2xl shadow-md
            p-2 cursor-pointer" >
 
           <div className="w-full h-[130px] overflow-hidden rounded-xl">
-            <img src="https://deannaminich.com/wp-content/uploads/2023/02/Copy-of-Blog_templates-3.png"
+            <img src={image && image}
                  alt={name} className={`w-full h-full object-cover
                  ${isAcceptingOrders ? 'brightness-100':'filter grayscale brightness-75'} `} />
           </div>
@@ -666,19 +732,21 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
           <h1 className="mt-2 font-semibold text-gray-900 text-sm truncate px-1">{name}</h1>
 
          <div className="flex justify-between items-center mt-2">
-           <h1 className="text-green-700 font-bold text-sm">₹{price}</h1>
+           <h1 className="text-green-700 font-bold text-sm">₹{price - Discount || 0}</h1>
 
-            {showCounter[id] ? (
+            {/* {showCounter[_id] ? ( */}
+           { itemsState[_id]?.count > 0 ?(
               <div className="flex items-center border border-gray-300 rounded-full px-1 py-1
                bg-white shadow-sm">
                <button className="text-green-700 font-bold"
-                 onClick={() => handleDecrease(id)} >
+                 onClick={() => handleDecrease(_id)} >
                <TiMinus /></button>
 
-              <input type="tel" value={itemsState[id]?.count || 1} readOnly
+              <input type="tel" value={itemsState[_id]?.count || 1} readOnly
                className="w-8 text-center outline-none text-green-700 font-semibold" />
+
                 <button className="text-green-700 font-bold text-lg px-1"
-                  onClick={() => handleIncrease(id)} >
+                  onClick={() => handleIncrease(_id)} >
                   <GoPlus />
                </button>
              </div>
@@ -686,7 +754,7 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
                 isAcceptingOrders && (
               <button className="flex justify-center items-center text-green-700 border
                  border-green-600 px-5 py-1 rounded-full font-semibold  transition"
-                 onClick={() => handleAddClick(id, name, price)} >Add</button>
+                 onClick={() => handleAddClick(_id, name, price)} >Add</button>
                   ))}
                 </div>
               </div>
@@ -696,7 +764,7 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
       )}
 
     
-    </div>
+    </div>)}
 
 {/* ended food items */}
 
@@ -709,24 +777,44 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
 
 
 {/***********************  started all food items  *******************************/}
+{!loading && filterLoader ? (
+  <>
+   <div className="w-full md:w-1/2 mx-auto px-2 grid grid-cols-1 gap-6 mt-4">
+        <Skeleton height={22} width={230} />
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="bg-white rounded-xl flex items-start gap-4 p-2">
+            <div className="w-38 h-44 rounded-xl overflow-hidden flex-shrink-0">
+              <Skeleton height="100%" width="100%" borderRadius="1rem" />
+            </div>
+            <div className="flex flex-col justify-between flex-1 gap-2 mt-4">
+              <Skeleton height={20} width="90%" />
+              <Skeleton height={14} width="80%" />
+              <Skeleton height={14} width="80%" />
+              <Skeleton height={18} width="80%" />
+            </div>
+          </div>
+        ))}
+    </div>
 
-<div className="p-2 bg-gray-50 min-h-screen">
-{foodCategory && foodCategory.map((v) => (
- <div key={v._id} className="mb-6 bg-white rounded-2xl shadow-md overflow-hidden border
-  border-gray-100 " ref={(el) => (categoryRefs.current[v._id] = el)}> 
-        
- <div className="flex justify-between items-center px-4 py-3 cursor-pointer"
-    onClick={() => toggleCategory(v._id)} >
+  </>
+):(
+  <div className="p-2 bg-gray-50 min-h-screen">
+    {foodCategory && foodCategory.map((v) => (
+    <div key={v._id} className="mb-6 bg-white rounded-2xl  overflow-hidden border
+      border-gray-100 " ref={(el) => (categoryRefs.current[v._id] = el)}> 
+            
+    <div className="flex justify-between items-center px-4 py-3 cursor-pointer"
+        onClick={() => toggleCategory(v._id)} >
 
- <h1 className="text-lg font-bold capitalize text-gray-800 tracking-tight">{v.name}</h1>
+    <h1 className="text-lg font-bold capitalize text-gray-800 tracking-tight">{v.name}</h1>
 
- <span className="flex items-center">
-    {openCategories.includes(v._id) ? (
-    <FaAngleUp size={28} className="text-gray-500" />
-    ) : (
-    <IoIosArrowDown size={28} className="text-gray-500" />
-   )}
-</span>
+    <span className="flex items-center">
+        {openCategories.includes(v._id) ? (
+        <FaAngleUp size={28} className="text-gray-500" />
+        ) : (
+        <IoIosArrowDown size={28} className="text-gray-500" />
+      )}
+    </span>
 </div>
 
  {/* Expanded Food Items */}
@@ -758,33 +846,33 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
       </div>
 
       {/* Add / Counter Buttons */}
-<div className="flex justify-between items-center mt-3">
-  <h1 className="text-lg font-extrabold text-gray-800">₹{value.price}</h1>
+  <div className="flex justify-between items-center mt-3">
+    <h1 className="text-lg font-extrabold text-gray-800">₹{value.price - value.Discount || 0}</h1>
 
-  {itemsState[value._id]?.count > 0 ? (
-    <div className="flex items-center border border-gray-300 rounded-full py-1 bg-white shadow-sm">
-      <button className="text-green-700 font-bold text-lg px-2"
-        onClick={() => handleDecrease(value._id)} >
-        <TiMinus />
-      </button>
+    {itemsState[value._id]?.count > 0 ? (
+      <div className="flex items-center border border-gray-300 rounded-full py-1 bg-white shadow-sm">
+        <button className="text-green-700 font-bold text-lg px-2"
+          onClick={() => handleDecrease(value._id)} >
+          <TiMinus />
+        </button>
 
-      <input type="tel" value={itemsState[value._id]?.count} readOnly
-        className="w-8 text-center outline-none text-green-700 font-semibold" />
+        <input type="tel" value={itemsState[value._id]?.count} readOnly
+          className="w-8 text-center outline-none text-green-700 font-semibold" />
 
-      <button className="text-green-700 font-bold text-lg px-2 hover:text-green-800"
-        onClick={() => handleIncrease(value._id)} >
-        <GoPlus />
-      </button>
-    </div>
-  ) : (
-    isAcceptingOrders && (
-      <button className="text-green-700 border border-green-600 px-6 py-1.5 rounded-full
-       font-semibold ml-2" onClick={() => handleAddClick(value._id, value.name, value.price)} >
-        Add
-      </button>
-    )
-  )}
-</div>
+        <button className="text-green-700 font-bold text-lg px-2 hover:text-green-800"
+          onClick={() => handleIncrease(value._id)} >
+          <GoPlus />
+        </button>
+      </div>
+    ) : (
+      isAcceptingOrders && (
+        <button className="text-green-700 border border-green-600 px-6 py-1.5 rounded-full
+        font-semibold ml-2" onClick={() => handleAddClick(value._id, value.name, value.price)} >
+          Add
+        </button>
+      )
+    )}
+  </div>
 
 
      </div>
@@ -796,6 +884,8 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
 </div>
   ))}
 </div>
+)}
+
 
 {/**************************  Ended food items  ********************************/}
 
@@ -837,7 +927,7 @@ shadow-sm cursor-pointer hover:shadow-md transition`}>
           </div>
 
         <div className='px-1 flex flex-col justify-start text-start '>
-          <h1 className='font-bold text-[16px] uppercase'>{value.restaurants_Owner.business_name}</h1>
+          <h1 className='font-bold text-[16px] uppercase'>{value.restaurant.business_name}</h1>
           <p className='font-bold text-xs'>4.2 (1.2k+) . 40-50 mins</p>
           <span className='text-gray-700 font-medium text-xs'>pasta, burgers, chiness...</span>
           {/* <p className='text-gray-700 font-medium'>{value.location}, {value.distance}</p> */}

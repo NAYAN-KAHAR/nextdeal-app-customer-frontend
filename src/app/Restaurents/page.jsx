@@ -23,7 +23,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css'; 
 import AddCardItem from '../components/addCard';
 import ViewCardItem from '../components/viewCard';
-
+import Loader from '../components/loader';
 
 
 const foodCategories = [
@@ -67,51 +67,26 @@ const foodCategories = [
 ];
 
 const cuisines = [
-  // Cuisines
   "Indian",
-  "Punjabi",
-  "South Indian",
   "North Indian",
-  "Biryani",
+  "South Indian",
+  "Punjabi",
   "Bengali",
+
+  "Biryani",
   "Chinese",
-  "Italian",
-  "Mexican",
-  "Japanese",
-  "Seafood",
-  "Street Food",
   "Fast Food",
-  "Healthy Food",
+  "Street Food",
+  "Snacks",
   "Desserts",
-  
-  // Meal types
+
   "Breakfast",
-  "Brunch",
   "Lunch",
   "Dinner",
-  "Snacks",
+
   "Beverages",
-  "Soups",
-  "Salads",
-  "Appetizers",
-  "Main Course",
-  "Sides",
-  "Grill",
-  "BBQ",
-  "Sandwiches",
-  "Pizza",
-  "Pasta",
-  "Rice Dishes",
-  "Noodles",
-  
-  // Drinks & Desserts
-  "Juices",
-  "Smoothies",
-  "Tea & Coffee",
-  "Milkshakes",
   "Ice Cream",
-  "Cakes & Pastries",
-  "Chocolates & Sweets"
+  "Cakes & Pastries"
 ];
 
 
@@ -164,7 +139,11 @@ const RestaurantsPage = () => {
     const [itemsState, setItemsState] = useState({});
     const [addItemError, setAddItemError] = useState('');
     const [showCounter, setShowCounter] = useState({});
-    const [whichFilter, setWhichFilter] = useState('All');;
+    const [whichFilter, setWhichFilter] = useState('All');
+    const [searchWhichFilter, setSearchWhichFilter] = useState('All');
+
+    const [searchRestualtLoader, setSearchRestualtLoader] = useState(false);
+    const [allFoods,setAllFoods] = useState([]);
     const router =  useRouter();
 
 
@@ -189,8 +168,7 @@ const RestaurantsPage = () => {
   }, [router]);
 
 
-// fetch location 
-  // 1️⃣ Get user location
+// fetch location Get user location
   // useEffect(() => {
   //   if (!navigator.geolocation) return;
 
@@ -217,10 +195,60 @@ const RestaurantsPage = () => {
   //     .catch(err => console.error(err));
   // }, [location]);
 
+
+
+// fetch location Get user location
+// useEffect(() => {
+//   if (!navigator.geolocation) return;
+
+//   navigator.geolocation.getCurrentPosition(
+//     (pos) => setLocation({
+//       lat: pos.coords.latitude,
+//       lng: pos.coords.longitude
+//     }),
+//     (err) => {
+//       console.error("Geolocation error:", err);
+//       if (err.code === 1) {
+//         // Permission denied
+//         setAdress(''); // Clear current address
+//         alert('Location access denied. Please enter your address manually.');
+//       }
+//     }
+//   );
+// }, []);
+
+// // Reverse geocode when location changes
+// useEffect(() => {
+//   if (!location) return;
+//   const { lat, lng } = location;
+
+//   fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+//     .then(res => res.json())
+//     .then(data => {
+//       if (data && data.display_name) {
+//         setAdress(data.display_name);
+//       } else {
+//         setAdress('');
+//       }
+//     })
+//     .catch(err => console.error(err));
+// }, [location]);
+
+
+// {!location && !address && (
+//   <div className="manual-address">
+//     <p>Enter your address:</p>
+//     <input
+//       type="text"
+//       value={address}
+//       onChange={(e) => setAdress(e.target.value)}
+//       placeholder="Enter your location"
+//     />
+//   </div>
+// )}
+
   
 // lat:23.9057271,log:87.4961469,
-
-
 // scroll stick bar logic here
 useEffect(() => {
   const handleScroll = () => {
@@ -250,9 +278,15 @@ const fetchAllRestuarents = async () => {
     const lat = 23.9057271;
     const lng = 87.4961469; // use 'lng' to match backend
     const res = await axios.get(`${apiUrl}/api/get-all-nearest-restuarents?lat=${lat}&lng=${lng}`);
-    console.log('fetchAllRestuarents', res.data);
+    // console.log('fetchAllRestuarents', res.data);
     setRestaurantData(res.data.restaurants);
     setAllRestuarentData(res.data.restaurants);
+    setFoodCategory(res.data.Categories);
+    setAllFoodCategory(res.data.Categories);
+
+    setSubFoodCategory(res.data.SubCategories);
+    setAllSubFoodCategory(res.data.SubCategories);
+
   } catch (err) {
     console.log(err);
   }
@@ -261,32 +295,39 @@ const fetchAllRestuarents = async () => {
 
 
 
-// get all categories 
-const fetchAllCategory = async () => {
-  try{
-    const res  = await axios.get(`${apiUrl}/api/get-all-food-categories`, 
-                          {withCredentials:true } );
-    console.log('fetchAllCategory', res.data);
+// // get all categories 
+// const fetchAllCategory = async () => {
+//   try{
+//     const res  = await axios.get(`${apiUrl}/api/get-all-food-categories`, 
+//                           {withCredentials:true } );
+//     console.log('fetchAllCategory', res.data);
 
-    setFoodCategory(res.data.Categories);
-    setAllFoodCategory(res.data.Categories);
+//     setFoodCategory(res.data.Categories);
+//     setAllFoodCategory(res.data.Categories);
 
-    setSubFoodCategory(res.data.SubCategories);
-    setAllSubFoodCategory(res.data.SubCategories);
+//     setSubFoodCategory(res.data.SubCategories);
+//     setAllSubFoodCategory(res.data.SubCategories);
 
-  }catch(err){
-    console.log(err);
-  }
-}
+//   }catch(err){
+//     console.log(err);
+//   }
+// }
  
 
 
 useEffect(() => {
   fetchAllRestuarents();
-  fetchAllCategory();
+  // fetchAllCategory();
 },[]);
 
-
+const handleAllButReset = () => {
+  setFoodLoading(true); 
+  // fetchAllCategory();
+  fetchAllRestuarents();
+  setWhichFilter('All');
+  setSubHeader('')
+  setTimeout(() =>  setFoodLoading(false), 500);
+}
 
 // Toggle Veg button
 const handleVeg = async () => {
@@ -321,9 +362,9 @@ const handleApplyFilter = () => {
 
 
 
-// handle veg and non veg restuarents
+// fetched restuarans based on veg and non veg
 const selcetVegLogic = async (e) => {
-  console.log(selectVegType);
+  console.log('selectVegType', selectVegType);
   if(!selectVegType) return alert('please select one!')
 
 
@@ -331,11 +372,9 @@ const selcetVegLogic = async (e) => {
   setFoodLoading(true); 
 
   try{
-     const lat = 23.9057271;
-     const lng = 87.4961469;
-
+ 
     const res = await axios.get(`${apiUrl}/api/get-veg-nonveg-restuarents/
-                 ${selectVegType}/${lat}/${lng}`, {withCredentials:true});
+                 ${selectVegType}`, {withCredentials:true});
     console.log('veg/non restuarants',res.data);
 
     if(!res.data){
@@ -345,14 +384,14 @@ const selcetVegLogic = async (e) => {
     }
     console.log('allRestuarentData', allRestuarentData);
     
-    const restaurantIds = [...new Set(res.data.restuarents.map((r) => r.restaurant?._id))];
+    const restaurantIds = [...new Set(res.data.restaurants.map((r) => r.restaurant?._id))];
     const filteredRestaurants = allRestuarentData.filter((r) =>
-                                 restaurantIds.includes(r._id));
+                              r?._id && restaurantIds.includes(r._id));
 
     await new Promise((resolve) => setTimeout(resolve, 400)); 
 
     console.log('filteredRestaurants', filteredRestaurants);
-
+    setSubHeader('');
     setRestaurantData(filteredRestaurants);
     setFoodLoading(false);
     window.scroll(200,200);
@@ -361,6 +400,22 @@ const selcetVegLogic = async (e) => {
   }
  
 }
+
+//  non -veg filter works logic
+useEffect(() => {
+  if (!selectVegType) return;
+  selcetVegLogic();
+}, [selectVegType]);
+
+
+const handleNonVeg = (text) => {
+  if (!text) return;
+  setSelectVegType(text); 
+  setWhichFilter('Non-Veg') 
+};
+
+
+
 
 
 // Handle sub header click (filter restaurants by selected category)
@@ -375,16 +430,16 @@ const handleSubHeader = async (e, value, i) => {
     setFoodLoading(false); 
     return;
   }
-
-  await new Promise((resolve) => setTimeout(resolve, 400)); 
+  setWhichFilter('');
   
-  const filtered = allFoodCategory.filter((v) => v.name === value.name);
-
+  const filtered = allFoodCategory.filter((v) => v.name.toLowerCase() === value.name.toLowerCase());
   const restaurantIds = [...new Set(filtered.map((v) => v.restaurant))];
   const filteredRestaurants = allRestuarentData.filter((r) =>
-    restaurantIds.includes(r._id)
+    r?._id && restaurantIds.includes(r._id)
   );
 
+   await new Promise((resolve) => setTimeout(resolve, 300)); 
+  // console.log('subheader', filteredRestaurants);
   setRestaurantData(filteredRestaurants);
   setFoodLoading(false); 
   window.scroll(200,200);
@@ -392,6 +447,7 @@ const handleSubHeader = async (e, value, i) => {
 };
 
 
+// handle price high to low and low to high 
 const handleRangePrice = async (query) => {
   console.log('query', query);
   setFoodLoading(true); 
@@ -402,54 +458,59 @@ const handleRangePrice = async (query) => {
     return;
   }
 
-  let filterData;
-  if(query === 'High'){
-    filterData = allSubFoodCategory.sort((a,b) => a.price - b.price);
-  }else{
-    filterData = allSubFoodCategory.sort((a,b) => b.price - a.price);
-  }
-  
+    // Make a copy before sort
+  let filterData = [...allSubFoodCategory];
 
-  await new Promise((resolve) => setTimeout(resolve, 4000 ));
-    // const filtered =  allSubFoodCategory.sort((a, b) => a.price - b.price);
+  if (query === "High") {
+    filterData.sort((a, b) => a.price - b.price); 
+    setWhichFilter('High');  
+  } else {
+    filterData.sort((a, b) => b.price - a.price);  
+    setWhichFilter('Low');
+  }
+  setSubHeader('');
+  const RestuarantsId = [...new Set(filterData.map((v) => v.restaurant))];
+  const filteredRestaurants = allRestuarentData.filter((v) => v?._id && RestuarantsId.includes(v._id));
+  await new Promise((resolve) => setTimeout(resolve, 3000 ));
+  console.log('filterData', filteredRestaurants);
   
-    console.log('restaurantData', restaurantData);
-    setFoodLoading(false); 
+  setRestaurantData(filteredRestaurants);
+  setFoodLoading(false); 
  
 };
 
-// price section  low to high / high to low
-// const handleRangePrice = async (query) => {
-//   console.log('query', query);
-//   setFoodLoading(true); 
 
-//   if (!query) {
-//     setRestaurantData(allRestuarentData);
-//     setFoodLoading(false); 
-//     return;
-//   }
-//   await new Promise((resolve) => setTimeout(resolve, 4000 ));
-//   // const filtered =  allSubFoodCategory.sort((a, b) => a.price - b.price);
-//   console.log('sorted result');
-//   try{
-//     const res = await axios.get(`${apiUrl}/api/customer-sort-restaurants-price-wise/${query}`,
-//       { withCredentials:true }
-//     );
-//     console.log(res.data.sorted);
-    
-//     setRestaurantData(res.data.sorted);
-//     setAllRestuarentData(res.data.sorted);
+// hanlde 299-599 and less then 299 price food restuarants
+const handleLimitPrice = async (priceRange) => {
+  console.log('priceRange', priceRange);
+  setFoodLoading(true); 
 
-//     console.log('restaurantData', restaurantData);
-//     setFoodLoading(false); 
-//   }catch(err){
-//     console.log(err);
-//   }
-// };
+  if (!priceRange) {
+    setRestaurantData(allRestuarentData);
+    setFoodLoading(false); 
+    return;
+  };
+   // Make a copy before sort
+  let filterData = [...allSubFoodCategory];
+
+  if (priceRange === "less-299") {
+    filterData = filterData.filter((value) => value.price <= 299 ); 
+    setWhichFilter('299');  
+  } else {
+    filterData = filterData.filter((v) => v.price > 299 && v.price <= 599);  
+    setWhichFilter('299-599');
+  }
+  setSubHeader('');
+  const RestuarantsId = [...new Set(filterData.map((v) => v.restaurant))];
+  const filteredRestaurants = allRestuarentData.filter((v) => v?._id && RestuarantsId.includes(v._id));
+  await new Promise((resolve) => setTimeout(resolve, 3000 ));
+  console.log('filterData', filteredRestaurants);
+  
+  setRestaurantData(filteredRestaurants);
+  setFoodLoading(false); 
 
 
-
-
+}
 
 
 
@@ -483,6 +544,7 @@ const handleSearch = (e) => {
   setSuggestions(uniqueFiltered);
 };
 
+
 // get values from suggestion clicked
 const handleSuggestionClick = async (suggestion) => {
     setSearchTerm(suggestion.name);
@@ -491,6 +553,7 @@ const handleSuggestionClick = async (suggestion) => {
     console.log('suggestion', suggestion);
     setIsClickedSuggestion(true);
     try{
+      setSearchRestualtLoader(true);
       const res = await axios.get(`${apiUrl}/api/get-all-search-foods-restuarants/${suggestion.name}`
         , { withCredentials: true} );
 
@@ -502,6 +565,9 @@ const handleSuggestionClick = async (suggestion) => {
       console.log('filteredRestuarant', filteredRestuarant);
       setSearchRestuarants(filteredRestuarant);
       setSearchFoods(res.data.allSubFoods);
+      setAllFoods(res.data.allSubFoods);
+      
+      setSearchRestualtLoader(false);
 
     }catch(err){
       console.log(err);
@@ -520,23 +586,24 @@ useEffect(() => {
 
 
 
-// fetches card items all foods
 useEffect(() => {
   const fetchCartItems = async () => {
     try {
       const res = await axios.get(`${apiUrl}/api/get-food-item-view-cards`, { withCredentials: true });
       const cartItems = res.data.cartItem || [];
-      console.log(res.data);
       setCartItemsData(cartItems);
+      // ALWAYS compute total count from backend — not from itemsState
       const totalCount = cartItems.reduce((acc, cur) => acc + (cur.count || 0), 0);
       setTotalItems(totalCount);
+
     } catch (err) {
       console.log(err);
     }
   };
 
   fetchCartItems();
-}, [isViewClick]);
+}, [isViewClick]); 
+
 
 // see view card all foods 
 const handleViewClick  = (response) => {
@@ -550,45 +617,51 @@ const handleAddClick = async (id, name, price) => {
 
   try {
     const newItem = { [id]: { name, price, count: 1 } };
-    console.log('newItem', newItem);
 
-    const res = await axios.post(`${apiUrl}/api/add-food-item-view-cards`,
-                newItem,{ withCredentials: true });
+    const res = await axios.post(`${apiUrl}/api/add-food-item-view-cards`, newItem,
+      { withCredentials: true } );
 
-    console.log(res.data);
+    // Update UI locally
+    setItemsState((prev) => ({
+      ...prev,
+      [id]: { name, price, count: 1 }
+    }));
 
-    // Only update state if backend succeeded
-    setItemsState((prev) => ({...prev, ...newItem }));
     setShowCounter((prev) => ({ ...prev, [id]: true }));
-
+    await fetchCartItems(); 
   } catch (err) {
     console.log(err.response);
-    if (err.response?.data?.error ===
-      "You already have items from another restaurant. Please remove them before adding new items."){
-        setAddItemError(err.response.data?.restaurantName?.business_name);
+    if (
+      err.response?.data?.error ===
+      "You already have items from another restaurant. Please remove them before adding new items."
+    ) {
+      setAddItemError(err.response.data?.restaurantName?.business_name);
     }
   }
 };
+
+
+
 const handleIncrease = async (id) => {
   if (addItemError) return;
 
-  const updatedItem = (prev) => ({
+  setItemsState(prev => ({
     ...prev,
     [id]: { ...prev[id], count: (prev[id]?.count || 0) + 1 },
-  });
-
-  const newState = updatedItem(itemsState);
+  }));
 
   try {
-     await axios.post(`${apiUrl}/api/add-food-item-view-cards`,
-       newState,{ withCredentials: true });
+    await axios.post(`${apiUrl}/api/add-food-item-view-cards`, {
+      [id]: { count: (itemsState[id]?.count || 0) + 1 }
+    }, { withCredentials: true });
 
-    setItemsState(updatedItem);
     fetchCartItems();
+
   } catch (err) {
     console.log(err.response);
   }
 };
+
 
 // minimise card logic here
 const handleDecrease = async (id) => {
@@ -597,33 +670,31 @@ const handleDecrease = async (id) => {
   const currentCount = itemsState[id]?.count || 0;
   const newCount = currentCount - 1;
 
-  // 🧠 Immediately update UI
-  setItemsState((prev) => {
+  // Update UI immediately
+  setItemsState(prev => {
     const updated = { ...prev };
 
     if (newCount <= 0) {
-      // Remove item entirely from local state
       delete updated[id];
     } else {
       updated[id] = { ...updated[id], count: newCount };
     }
-    fetchCartItems();
     return updated;
   });
 
-  // 📨 Send request to backend
   try {
-    const updatedData = {
-      [id]: { count: Math.max(newCount, 0) },
-    };
+    await axios.post(`${apiUrl}/api/add-food-item-view-cards`, {
+      [id]: { count: Math.max(newCount, 0) }
+    }, { withCredentials: true });
 
-    await axios.post(`${apiUrl}/api/add-food-item-view-cards`, updatedData, {
-      withCredentials: true,
-    });
+    // NOW fetch updated cart
+    fetchCartItems();
+
   } catch (err) {
     console.log(err.response);
   }
 };
+
 
 
 
@@ -684,16 +755,25 @@ const handleReplaceCard = async () => {
 }
 
 
-// handle filters buttons 
-const handleFiters = async (filter) => {
-  if(!filter) return;
-  try{
-    console.log('filter', filter);
-  }catch(err){
-    console.log(err);
-  }
-}
+// handle filters buttons from search section modal
+const handleFiters = (filter) => {
+  setSearchWhichFilter(filter);
 
+  // always start from master list
+  let filtered = [...allFoods];
+
+  if (filter === "Veg") {
+    filtered = allFoods.filter(item => item.foodType === "Veg");
+  }
+  else if (filter === "Non Veg") {
+    filtered = allFoods.filter(item => item.foodType === "Non Veg");
+  }
+  else if (filter === "Below Rs.300") {
+    filtered = allFoods.filter(item => item.price <= 299);
+  }
+
+  setSearchFoods(filtered);
+};
 
 
 
@@ -833,7 +913,7 @@ return (
       ${searchTerm  ? 'h-screen' : 'h-[20%]'} `}> */}
 
 <div className={`fixed top-0 left-0 w-full bg-[#F1F0F5] z-[999] scrollbar-hide pb-2
-  transform transition-all duration-500 ease-in-out rounded-b-2xl
+  transform transition-all duration-500 ease-in-out 
   ${inputPopUp ? 'translate-y-0' : '-translate-y-full'}
   ${inputPopUp && (searchTerm || suggestions.length > 0) ? 'h-screen' : 'h-[20%]'}
   overflow-y-auto`}>
@@ -893,11 +973,13 @@ return (
 
       {/* Filters */}
       {isDishes && (
-        <div className='p-2 flex items-center gap-2 overflow-x-auto overflow-y-visible py-2.5 scrollbar-hide'>
-          {["All", "Veg","Less than Rs. 300", "Non Veg", ,].map((filter, i) => (
-            <div key={i} className="flex items-center gap-1 px-4 py-1 border
-             border-gray-400 rounded-lg shadow-sm whitespace-nowrap 
-             cursor-pointer bg-white" onClick={() => handleFiters(filter)}>
+        <div className='p-2 flex items-center gap-2 overflow-x-auto overflow-y-visible py-2.5 
+        scrollbar-hide'>
+          {["All", "Veg","Below Rs.300", "Non Veg",].map((filter, i) => (
+            <div key={i} className={`flex items-center gap-1 px-3.5 py-1 border
+            ${searchWhichFilter === filter ? 'border-orange-600 text-orange-500':'border-gray-400 text-black'} 
+             rounded-lg shadow-sm whitespace-nowrap 
+             cursor-pointer bg-white`} onClick={() => handleFiters(filter)}>
               <p>{filter}</p>
             </div>
           ))}
@@ -912,7 +994,7 @@ return (
         </div>
       )}
 
-      {/* Render Restaurants */}
+      {/* Render All Restaurants */}
       {!isDishes && searchRestuarants?.length > 0
        && searchRestuarants.map((value, i) => (
         <div className='p-1 flex justify-between mt-3 bg-white' key={i}>
@@ -953,14 +1035,15 @@ return (
       ))}
 
 
-      {/* Render Dishes */}
+      {/* Render All Dishes */}
       {isDishes && (
         <div className="flex flex-col gap-6 overflow-y-auto pb-24 px-3 md:px-6 scrollbar-hide">
           {searchRestuarants?.length > 0 ? searchRestuarants.map((restaurant, i) => (
             <div key={i} className="bg-white/70 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-md p-4">
               <div className="flex justify-between items-center mb-4">
                 <div className="text-start">
-                  <h1 className="text-xl font-bold text-slate-800 capitalize tracking-tight">{restaurant.business_name || "Unknown"}</h1>
+                  <h1 className="text-xl font-bold text-slate-800 capitalize tracking-tight">
+                    {restaurant.business_name || "Unknown"}</h1>
                   <p className="text-amber-600 text-xs font-semibold mt-0.5">Opens in 60 mins</p>
                 </div>
                 <IoArrowForward size={26} className="text-slate-500" />
@@ -968,7 +1051,8 @@ return (
 
               <div className="flex gap-4 overflow-x-auto overflow-y-visible pb-2 snap-x snap-mandatory scrollbar-hide">
                 {searchFoods.filter(f => f.restaurant._id === restaurant._id).map((v, i) => {
-                 return <div key={i} className="min-w-full bg-white border border-slate-100 rounded-2xl p-3 flex-shrink-0 snap-start">
+                 return <div key={i} className="min-w-[90%] bg-white border border-slate-300 
+                  rounded-2xl p-3 flex-shrink-0 snap-start">
                     <div className="flex flex-col justify-between h-full">
                       <div className="flex justify-between items-start gap-2">
                         <div>
@@ -997,13 +1081,20 @@ return (
 
               {itemsState[v._id]?.count > 0 ? (
                <div className="flex items-center border border-gray-300 rounded-2xl overflow-hidden px-2 py-0.5">
-                 <button className="text-green-700 font-bold text-lg px-2 rounded-full" onClick={() => handleDecrease(v._id)}><TiMinus /></button>
-                <input type="tel" value={itemsState[v._id]?.count} readOnly className="w-8 text-center outline-none text-green-700 font-semibold bg-transparent" />
-                <button className="text-green-700 font-bold text-lg px-2 hover:bg-gray-100 rounded-full" onClick={() => handleIncrease(v._id)}><GoPlus /></button>
+                 <button className="text-green-700 font-bold text-lg px-2 rounded-full"
+                  onClick={() => handleDecrease(v._id)}><TiMinus /></button>
+
+                <input type="tel" value={itemsState[v._id]?.count} 
+                readOnly className="w-8 text-center outline-none text-green-700 font-semibold bg-transparent" />
+                <button className="text-green-700 font-bold text-lg px-2
+                 hover:bg-gray-100 rounded-full" 
+                 onClick={() => handleIncrease(v._id)}><GoPlus />
+                 </button>
                 </div>
                ) : (
                 <div className="flex w-30 justify-center items-center rounded-2xl overflow-hidden px-2 py-0.5 bg-green-700">
-                   <button className="cursor-pointer text-white font-bold text-lg px-6" onClick={() => handleAddClick(v._id, v.name, v.price)}>Add</button>
+                   <button className="cursor-pointer text-white font-bold text-lg px-6"
+                    onClick={() => handleAddClick(v._id, v.name, v.price)}>Add</button>
                   </div>
                )}
               </div>
@@ -1101,7 +1192,8 @@ return (
 </p>
 
 <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-hide bg-white">
-  {foodCategory && foodCategory.filter((v, i, arr) => arr.findIndex((x) => x.name === v.name) === i )
+   {foodCategory &&  foodCategory.filter((v, i, arr) => arr.findIndex(
+          (x) => x.name.toLowerCase() === v.name.toLowerCase()) === i )
     .map((value, i) => (
       <div key={value._id || i} className={`flex flex-col items-center gap-2 min-w-[80px]
          cursor-pointer`} onClick={(e) => handleSubHeader(e, value, i)} >
@@ -1130,13 +1222,13 @@ return (
 <h1 className="font-bold mt-6 px-4 text-lg text-start text-gray-700">More on NextDeal</h1>
 
   <div className="flex justify-between overflow-auto px-4 py-3 scrollbar-hide">
-    <div className="min-w-[140px] p-1 rounded-xl border border-gray-200 flex flex-col items-center cursor-pointer hover:shadow-md transition duration-200">
+    <Link href={'/99Page'}  className="min-w-[140px] p-1 rounded-xl border border-gray-200 flex flex-col items-center cursor-pointer hover:shadow-md transition duration-200">
        <h2 className="text-xs text-gray-700 font-semibold text-center">99 STORE</h2>
        <p className="text-xs text-red-500 font-semibold text-center">MEAL AT 99</p>
        <img src="https://images.cnbctv18.com/uploads/2025/07/swiggy-99-store-2025-07-f7718ff6921cf737ca8e736ea3e4bd30.jpg?impolicy=website&width=400&height=225"
                className="w-full h-16 object-cover rounded-xl"
                      alt="99 store meal" />
-</div>
+</Link>
 
    {/* Combo Offer */}
    <div className="min-w-[140px] p-1 rounded-xl border border-gray-200 flex flex-col items-center  cursor-pointer hover:shadow-md transition duration-200">
@@ -1148,7 +1240,55 @@ return (
 
 
 <div className={`flex items-center gap-3 overflow-x-auto overflow-y-visible px-3 py-2 scrollbar-hide`}>
- <div className="flex items-center gap-1 px-3 py-1.5 border border-gray-400 rounded-lg 
+
+   <div className={`flex items-center gap-1 px-6 py-1.5 border
+   ${whichFilter === 'All' ? 'border-orange-600 text-orange-600':'border-gray-400 text-black'} 
+   rounded-lg   shadow-sm whitespace-nowrap cursor-pointer`} 
+     onClick={(e) => handleAllButReset() }>
+        <p>All</p>
+        
+ </div>
+
+
+
+
+<div className={`flex items-center gap-1 px-4 py-1.5 border
+   ${whichFilter === 'Low' ? 'border-orange-600 text-orange-600':'border-gray-400 text-black'} 
+   rounded-lg   shadow-sm whitespace-nowrap cursor-pointer`} 
+    onClick={() => handleRangePrice('Low')}>
+ <p>Low to High</p>
+  </div>
+
+ <div className={`flex items-center gap-1 px-4 py-1.5 border
+   ${whichFilter === '299-599' ? 'border-orange-600 text-orange-600':'border-gray-400 text-black'} 
+   rounded-lg   shadow-sm whitespace-nowrap cursor-pointer`}
+      onClick={() => handleLimitPrice('299-599')}>
+ <p>Rs. 299-599</p>
+  </div>
+
+ <div className={`flex items-center gap-1 px-4 py-1.5 border
+   ${whichFilter === 'High' ? 'border-orange-600 text-orange-600':'border-gray-400 text-black'} 
+   rounded-lg   shadow-sm whitespace-nowrap cursor-pointer`} 
+    onClick={() => handleRangePrice('High')}>
+   <p>High to Low</p>
+</div>
+
+
+<div className={`flex items-center gap-1 px-4 py-1.5 border
+   ${whichFilter === 'less-299' ? 'border-orange-600 text-orange-600':'border-gray-400 text-black'} 
+   rounded-lg   shadow-sm whitespace-nowrap cursor-pointer`}
+    onClick={() => handleLimitPrice('less-299')}>
+    <p>Less than Rs. 299</p>
+</div>
+
+<div className={`flex items-center gap-1 px-4 py-1.5 border
+   ${whichFilter === 'Non-Veg' ? 'border-orange-600 text-orange-600':'border-gray-400 text-black'} 
+   rounded-lg   shadow-sm whitespace-nowrap cursor-pointer`} 
+     onClick={() => handleNonVeg('Non-Veg') }>
+ <p>Non Veg</p>
+  </div>
+
+   <div className="flex items-center gap-1 px-3 py-1.5 border border-gray-400 rounded-lg 
    shadow-sm whitespace-nowrap cursor-pointer"
       onClick={(e) => {
          e.stopPropagation();
@@ -1163,32 +1303,6 @@ return (
 
 
 
-
-
-<div className="flex items-center gap-1 px-4 py-1.5 border border-gray-400 rounded-lg 
-    shadow-sm whitespace-nowrap cursor-pointer" onClick={() => handleRangePrice('Low')}>
- <p>Low to High</p>
-  </div>
-
- <div className="flex items-center gap-1 px-4 py-1.5 border border-gray-400 rounded-lg 
-                        shadow-sm whitespace-nowrap cursor-pointer">
- <p>Rs. 299-599</p>
-  </div>
-
- <div className="flex items-center gap-1 px-4 py-1.5 border border-gray-400 rounded-lg 
-      shadow-sm whitespace-nowrap cursor-pointer"  onClick={() => handleRangePrice('High')}>
- <p>High to Low</p>
-  </div>
-
-<div className="flex items-center gap-1 px-3 py-1.5 border border-gray-400 rounded-lg 
-         shadow-sm whitespace-nowrap cursor-pointer">
-           <p>Less than Rs. 299</p>
-</div>
-
-<div className="flex items-center gap-1 px-3 py-1.5 border border-gray-400 rounded-lg 
-    shadow-sm whitespace-nowrap cursor-pointer">
- <p>Non Veg</p>
-  </div>
 
  <div className="flex items-center gap-1 px-3 py-1.5 border border-gray-400 rounded-lg 
           shadow-sm whitespace-nowrap cursor-pointer" onClick={() => setIsCuisines(!isCuisines)}>
@@ -1231,8 +1345,15 @@ return (
 <h1 className="font-bold mt-3 px-4 text-lg text-start text-gray-800">Restaurants to explore</h1>
 
 {restaurantData && restaurantData.sort((a, b) => {
-      return b.isAcceptingOrders - a.isAcceptingOrders;
+      if (!a) return 1;      // null goes to bottom
+      if (!b) return -1;
+
+      const orderA = a.isAcceptingOrders ?? false;
+      const orderB = b.isAcceptingOrders ?? false;
+
+      return orderB - orderA;
      }).map((v, i) => {
+       if (!v) return null;
   return (
     <div className='p-1 flex justify-between' key={v._id}>
       <div className='px-2 flex justify-start gap-4 mt-1 items-center'>
@@ -1241,7 +1362,8 @@ return (
             <img
               src="https://images.archanaskitchen.com/images/recipes/world-recipes/pizza-recipes/No_Yeast_Thin_Crust_Veggie_Pizza_Recipe_1_0359f3d67b.jpg"
               alt="Restaurant"
-              className={`w-full h-full object-cover transition duration-500 ${v.isAcceptingOrders ? 'brightness-100':'filter grayscale brightness-75'}`}
+              className={`w-full h-full object-cover transition duration-500 
+                ${v.isAcceptingOrders ? 'brightness-100':'filter grayscale brightness-75'}`}
             />
             <button className="absolute top-3 right-3 bg-white p-1.5 rounded-full shadow">
               <FiBookmark size={18} className="text-gray-700"/>
@@ -1420,7 +1542,7 @@ return (
 
 {/* opened cuisiness */}
 
-{isCuisines && (<div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 
+{isCuisines && (<div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 
   transition-opacity duration-300" onClick={() => setIsCuisines(false)}/>)}
 
 <div className={`fixed bottom-0 left-0 w-full max-h-[80%] bg-white rounded-t-3xl shadow-2xl
@@ -1447,7 +1569,7 @@ return (
 
 
   {/* Cuisines List */}
-  <div className="px-4 py-2 max-h-[55vh] overflow-y-auto scrollbar-hide grid grid-cols-2 
+  <div className="px-4 py-2 pb-40 max-h-[50vh] overflow-y-auto grid grid-cols-2 
   md:grid-cols-3 gap-3 mb-3">
     {cuisines?.length > 0 && cuisines.map((item, index) => (
       <label key={index} className="cursor-pointer select-none flex items-center gap-2
