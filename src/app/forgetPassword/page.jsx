@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -9,10 +9,10 @@ import axios from "axios";
 const apiUrl = process.env.NEXT_PUBLIC_CUSTOMER_API_URL;
 
 
-const ForgetPassword = () => {
+const ForgetPasswordContent = () => {
 
   const router = useRouter();
-  
+
   const searchParams = useSearchParams();
   const mobile = searchParams.get("mobile");
 
@@ -40,22 +40,22 @@ const ForgetPassword = () => {
     onSubmit: async (values) => {
       console.log("Submitted:", values);
       setLoading(true);
-      try{
-        const { password } =  values ;
-        const res =  await axios.put(`${apiUrl}/api/profile-update`, {password, mobile},
-          {withCredentials:true}
-         );
+      try {
+        const { password } = values;
+        const res = await axios.put(`${apiUrl}/api/profile-update`, { password, mobile },
+          { withCredentials: true }
+        );
         console.log(res.data);
-        if(res.data.isUpdate){
-           setTimeout(() => {
-           setLoading(false);
-           router.push("/Signup"); 
+        if (res.data.isUpdate) {
+          setTimeout(() => {
+            setLoading(false);
+            router.push("/Signup");
           }, 1500);
         }
-      }catch(err){
+      } catch (err) {
         console.log(err);
       }
-      
+
     },
   });
 
@@ -74,7 +74,7 @@ const ForgetPassword = () => {
             <label className="text-sm font-semibold text-gray-800">New Password</label>
 
             <div className="relative">
-              <input  type={showPass1 ? "text" : "password"}  name="password"
+              <input type={showPass1 ? "text" : "password"} name="password"
                 placeholder="Enter new password" onChange={formik.handleChange}
                 value={formik.values.password} maxLength={12}
                 className="w-full p-2.5 mt-1 border border-gray-300 rounded-lg 
@@ -130,6 +130,14 @@ const ForgetPassword = () => {
         </form>
       </div>
     </div>
+  );
+};
+
+const ForgetPassword = () => {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex justify-center items-center">Loading...</div>}>
+      <ForgetPasswordContent />
+    </Suspense>
   );
 };
 
