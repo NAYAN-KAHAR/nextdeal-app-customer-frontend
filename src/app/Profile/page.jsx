@@ -133,7 +133,106 @@ const ProfilePage = () => {
   return auth ? (
     <>
    
-      <NavbarTop />
+   <NavbarTop />
+   <div className="relative min-h-screen w-full bg-gradient-to-b from-blue-50 via-white to-gray-100 overflow-hidden flex justify-center items-start pt-20">
+
+
+  {/* 🌟 Profile Form Card */}
+  <div className="relative z-20 w-full max-w-lg p-6 md:p-8 bg-white/70 backdrop-blur-xl rounded-3xl border border-white/30 shadow-2xl">
+
+    {/* Photo Section */}
+    <div className="flex justify-between items-center">
+      <img 
+        src={`${image ? image : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHZRC_JCJG4XCFypC11H549nZXGFvUTJO8qQ&s'}`}
+        alt="profile" 
+        className="w-24 h-24 rounded-full shadow-xl object-cover border-4 border-white"
+      />
+
+      <div className="flex flex-col gap-2">
+        <label  htmlFor="file" 
+          className="px-3 py-2 bg-gradient-to-r from-[#17186C] to-[#2A2BA0]
+           text-white rounded-xl text-sm cursor-pointer 
+                     hover:scale-105 transform transition shadow-md" >
+          Upload Photo
+        </label>
+        <input type="file" id="file"  className="hidden"  accept="image/*" 
+          onChange={handleProfileImage} />
+      </div>
+    </div>
+
+  
+    <div className="mt-6 space-y-4">
+      <div>
+        <label className="text-sm font-medium text-gray-700">Full Name</label>
+        <input  type="text"  value={name}  onChange={(e) => setName(e.target.value)}
+          placeholder="Nayan Kahar"
+          className="p-3 rounded-xl w-full border border-gray-300 outline-none focus:ring-2
+           focus:ring-[#17186C] transition shadow-sm bg-white"  />
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700">Phone Number</label>
+        <input  type="tel" readOnly value={user?.mobile} placeholder="9874562879"
+          className="p-3 rounded-xl w-full border outline-none border-gray-300 bg-gray-100
+           text-gray-600 shadow-sm" />
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700">Email Address</label>
+        <input  type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter email"
+          className="p-3 rounded-xl w-full border border-gray-300 outline-none focus:ring-2 
+          focus:ring-[#17186C] transition shadow-sm bg-white" />
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700">Address</label>
+        <input type="text"  value={address} onChange={(e) => setAdress(e.target.value)}
+          placeholder="Enter address"
+          className="p-3 rounded-xl w-full border border-gray-300 outline-none focus:ring-2
+           focus:ring-[#17186C] transition shadow-sm bg-white" />
+      </div>
+    </div>
+
+    {/* Save Button */}
+    <button  onClick={handleSaveBtn} className="w-full mt-8 py-3 rounded-2xl bg-gradient-to-r
+     from-[#17186C] to-[#2A2BA0] text-white font-semibold shadow-lg cursor-pointer">
+      {loading ? (
+        <div className="flex justify-center items-center gap-2">
+          <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full
+           animate-spin"></div>
+          Saving...
+        </div>
+      ) : (
+        "Save"
+      )}
+    </button>
+
+  </div>
+</div>
+
+
+ <NavbarBottom />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      {/* <NavbarTop />
       <div className="min-h-screen w-full flex-col justify-center pt-12 pb-16
        bg-gray-100 relative">
   
@@ -144,7 +243,6 @@ const ProfilePage = () => {
 
  
     
-  {/* Profile form */}
 <div className="w-full flex justify-between items-center p-4 md:p-6 ">
     <div className="z-50 bg-[#FFE7D3] p-4 w-full max-w-md mx-auto rounded-2xl ">
 
@@ -203,7 +301,7 @@ const ProfilePage = () => {
 
 
 </div>
- <NavbarBottom />
+ <NavbarBottom /> */}
     </>
   ):null;
 };

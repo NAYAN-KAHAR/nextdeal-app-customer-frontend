@@ -115,38 +115,35 @@ useEffect(() => {
 
 
  // scrolled logic  throttled
-useEffect(() => {
-  let throttleTimeout = null;
+ useEffect(() => {
+    let throttleTimeout = null;
 
-  const handleScroll = () => {
-    const currentScrollPos = window.scrollY;
+    const handleScroll = () => {
+      const currentScrollPos = window.scrollY;
 
-    if (currentScrollPos === 0) {
-      setTimeout(() => setShowHeader(true), 100);
-    } else if (currentScrollPos > prevScrollPos && currentScrollPos > 100) {
-      setShowHeader(false);
-    }
+      if (currentScrollPos === 0) {
+        setShowHeader(true);
+      } else if (currentScrollPos > prevScrollPos && currentScrollPos > 220) {
+        setShowHeader(false);
+      } else if (currentScrollPos < prevScrollPos) {
+        setShowHeader(true);
+      }
 
-    setPrevScrollPos(currentScrollPos);
-  };
+      setPrevScrollPos(currentScrollPos);
+    };
 
-  const throttledScroll = () => {
-    if (throttleTimeout === null) {
-      throttleTimeout = setTimeout(() => {
-        handleScroll();
-        throttleTimeout = null;
-      }, 200); // <-- adjust throttle delay (200ms is good)
-    }
-  };
+    const throttledScroll = () => {
+      if (!throttleTimeout) {
+        throttleTimeout = setTimeout(() => {
+          handleScroll();
+          throttleTimeout = null;
+        }, 100); // smaller throttle for smoother response
+      }
+    };
 
-  window.addEventListener("scroll", throttledScroll);
-
-  return () => {
-    window.removeEventListener("scroll", throttledScroll);
-    if (throttleTimeout) clearTimeout(throttleTimeout);
-  };
-}, [prevScrollPos]);
-
+    window.addEventListener("scroll", throttledScroll);
+    return () => window.removeEventListener("scroll", throttledScroll);
+  }, [prevScrollPos]);
 
 
 

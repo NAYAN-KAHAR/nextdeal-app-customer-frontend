@@ -10,76 +10,10 @@ import { FiSearch } from 'react-icons/fi';
 import Link from "next/link";
 const apiUrl = process.env.NEXT_PUBLIC_CUSTOMER_API_URL;
 
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css'; // needed for styles
 
 
-const shops = [
-  {
-    shopName: "Daily Mart",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "10% Cashback",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Toy Town",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "Flat 30% OFF",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Pixel Phones",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "Extra ₹500 OFF",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Beauty Bliss",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "15% OFF on orders ₹999+",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Travel Troopers",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "Holiday Sale - 20% OFF",   
-     address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Fit & Fine",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "New Year Offer: 25% OFF",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "GameZone",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "Gaming Week - 50% OFF",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Home Harmony",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "Up to 35% OFF",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Watch World",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "Time Deals - 30% OFF",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Smart Appliances",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "Combo Offer - Save ₹1000",
-        address: "Tech Park, Bengaluru",
-  },
-  {
-    shopName: "Crafty Corner",
-    image: "https://i.ytimg.com/vi/UsV5lQ9kVJY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDvcVX_rapybwEyLrWEb8HLrwi-qg",
-    discount: "Handmade Sale - 20% OFF",
-        address: "Tech Park, Bengaluru",
-  },
-];
 
 
 const FreeCoupon = () => {
@@ -88,8 +22,29 @@ const FreeCoupon = () => {
   const [groupedCoupons, setGroupedCoupons] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loader, setLoader] = useState(false);
+  const [auth, setAuth] = useState(false);
 
+  const router = useRouter();
   // console.log(groupedCoupons);
+
+
+  // Redirect if already logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axios.get(`${apiUrl}/api/verify`, {
+          withCredentials: true,
+        });
+        if (res.data.authenticated) {
+          setAuth(true);
+        }
+      } catch (err) {
+        console.log('User not logged in');
+        router.push('/Signup');
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   // fetch all shops on homepage
   const getAllShops = async () => {
@@ -97,7 +52,7 @@ const FreeCoupon = () => {
       setLoader(true);
       const res =  await axios.get(`${apiUrl}/api/all-shopkeeper-freecoupons/`, 
         {withCredentials:true});
-      //  console.log(res.data);
+       console.log(res.data);
       const newCoupons = [...res.data.allFreeCoupons];
       setAllCoupons(newCoupons);
       setLoader(false);
@@ -161,6 +116,91 @@ useEffect(() => {
 
 
 
+if (!auth ) return (
+  <>
+    {/* Top Navbar Skeleton */}
+<div className="w-full bg-gray-200 flex flex-col items-start justify-start px-2 
+    gap-2 rounded-b-3xl pb-4">
+  
+      <div className="w-full flex justify-between items-center gap-2">
+        <Skeleton height={40} width={100} /> {/* Logo */}
+        <div className="flex items-center gap-4">
+          <Skeleton height={28} width={100} /> 
+          <Skeleton circle={true} height={40} width={40} /> 
+        </div>
+      </div>
+
+
+</div>
+
+
+  {/* ================= STICKY SEARCH HEADER SKELETON ================= */}
+  <div className="sticky top-9 z-40 bg-white">
+    <div className="w-full px-4 pt-4 pb-4 shadow rounded-b-3xl space-y-4">
+
+      <Skeleton height={48} width="100%" borderRadius={12} />
+
+      {/* Free coupon promo */}
+      <div className="rounded-2xl px-4 mt-2 flex items-center justify-between bg-gray-200">
+        <div className="space-y-2">
+          <Skeleton height={14} width={120} />
+          <Skeleton height={12} width={180} />
+        </div>
+        <Skeleton height={32} width={70} borderRadius={12} />
+      </div>
+
+    </div>
+  </div>
+
+  <div className="px-4 md:px-6 mt-6">
+    <Skeleton height={26} width={220} />
+  </div>
+
+  {/* ================= COUPON GRID SKELETON ================= */}
+  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 px-3 md:px-6 py-4">
+    {[...Array(6)].map((_, i) => (
+      <div
+        key={i}
+        className="bg-white rounded-2xl shadow-md p-4 flex gap-4"
+      >
+        {/* Image */}
+        <Skeleton
+          height={80}
+          width={80}
+          borderRadius={12}
+        />
+
+        {/* Content */}
+        <div className="flex flex-col justify-between flex-1 min-h-[96px]">
+          <div className="space-y-2">
+            <Skeleton height={18} width="70%" />
+            <Skeleton height={14} width="90%" />
+            <Skeleton height={14} width="75%" />
+          </div>
+
+          <div className="flex items-center justify-between mt-3">
+            <Skeleton height={20} width={90} borderRadius={999} />
+            <Skeleton height={30} width={80} borderRadius={12} />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+
+
+{/* Bottom Navbar Skeleton */}
+ <div className="fixed bottom-0 w-full h-20 bg-gray-200 flex items-center justify-around px-4 mt-2
+    rounded-t-3xl">
+      {Array(5).fill('').map((_, i) => (
+        <Skeleton key={i} height={40} width={60} />
+      ))}
+    </div>
+  </>
+)
+
+
+
 // console.log('groupedCoupons', groupedCoupons);
 
 
@@ -170,69 +210,83 @@ useEffect(() => {
       <div className="min-h-screen w-full flex-col justify-center pt-12 pb-16 bg-white relative">
 
 
-   <div className="w-full p-2  bg-[#17186C] pt-6 rounded-b-2xl">
-                      
-      <div className="relative w-full md:w-[400px]">
-           <input type="text" placeholder="Search your shop"
-               className="w-full pl-10 pr-4 py-2 rounded-2xl border
-               border-white outline-none focus:ring-2 focus:ring-white 
-             focus:border-none text-sm text-black bg-white" />
-             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2
-                text-black" size={20} />
+
+
+  <div className="sticky top-9 z-40 bg-white">
+  <div className="w-full px-4 pt-8 pb-4 shadow rounded-b-3xl">
+
+    <div className="flex gap-3 items-center">
+
+      <div className="relative flex-1">
+        <FiSearch  size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"/>
+        <input type="text" placeholder="Search shops" 
+          className="w-full rounded-xl border border-gray-200
+          pl-11 pr-4 py-3 text-sm font-medium text-gray-800
+          focus:ring-2 focus:ring-black focus:outline-none shadow-sm" />
       </div>
 
-    <div className="w-full flex p-1 items-center justify-between gap-5 mt-3">
-        <p className="md:text-lg text-xs text-white font-semibold">
-          Free coupon for discount on your first order.
-          </p>
-        <Link href={'/FreeCoupon'} className="md:text-lg text-xs px-5 py-1.5 bg-red-600 
-         text-white cursor-pointer rounded-2xl font-bold">show now</Link>
-     </div>
+    </div>
+
+
+    <div className="mt-4 rounded-2xl bg-orange-50 border border-orange-100
+      px-4 py-3 flex items-center justify-between">
+      <div>
+        <p className="text-sm font-semibold text-blue-900"> 🎁 Free Coupon </p>
+        <p className="text-xs text-blue-700">for discount On your first order</p>
+      </div>
+      <button  className="px-4 py-2 text-xs font-semibold text-white
+        bg-blue-500 rounded-xl "> Show</button>
+    </div>
+
   </div>
+</div>
 
 
 
-
-<div className="md:p-6 p-4 text-xl font-bold ">Free Coupons</div>      
-
+<div className="md:p-6 p-4 text-xl font-bold text-gray-900 mt-2 ">Available Free Coupons</div>
 
 
-<div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 p-2 md:p-6">
-  {loader ? (
-    <div className="col-span-full flex justify-center items-center py-10">
-      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  ) : groupedCoupons.length === 0 ? (
-    <div className="col-span-full text-center text-gray-500 text-sm py-8">
-      No free coupons available.
-    </div>
-  ) : (
-    groupedCoupons.map((value, i) => (
-      <div key={i} className="z-50 bg-[#E6EEFF] shadow-lg rounded-xl p-3 flex justify-between transition">
-        <img
-          src={value?.shopkeeper?.shopImg || 'https://img.freepik.com/premium-vector/twostory-store-shop-with-brick-wall-vector-3d-clipart-isolated-white-background_396616-1044.jpg?semt=ais_hybrid&w=740&q=80'}
-          alt="shop image"
-          className="w-20 h-20 md:w-32 md:h-32 rounded-full object-cover"
-        />
-        <div className="flex flex-col justify-between flex-1">
-          <div className="ml-4">
-            <h2 className="text-md md:text-lg font-bold mt-1">{value.shopkeeper?.business_name}</h2>
-            <p className="text-xs text-gray-600 leading-snug font-medium">{value.shopkeeper?.address}</p>
+<div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 px-3 md:px-6 py-4">
+
+    { groupedCoupons.length !== 0 && groupedCoupons.map((value, i) => (
+      <div key={i} className="bg-white rounded-2xl shadow-md p-4
+              flex gap-4 items-start active:scale-[0.97] transition"  >
+        {/* Shop Image */}
+        <img src={ value?.shopkeeper?.shopImg ||
+            "https://img.freepik.com/premium-vector/twostory-store-shop-with-brick-wall-vector-3d-clipart-isolated-white-background_396616-1044.jpg?semt=ais_hybrid&w=740&q=80"
+          }
+          alt="shop image" className="w-20 h-20 md:w-24 md:h-24 rounded-xl
+           object-cover flex-shrink-0"/>
+
+        <div className="flex flex-col justify-between flex-1 min-h-[96px]">
+          <div>
+            <h2 className="text-base md:text-lg font-bold text-gray-900 leading-tight capitalize">
+              {value.shopkeeper?.business_name}
+            </h2>
+            <p className="text-xs md:text-sm text-gray-600 mt-1 line-clamp-2">
+              {value.shopkeeper?.address}
+            </p>
           </div>
-          <div className="w-full flex justify-between mt-4 items-center sm:flex-col">
-            <h1 className="ml-4 font-bold">{value?.couponCount} Coupons</h1>
-            <Link
-              href={`/Shop/${value.shopkeeper?.mobile}`}
-              className="py-1.5 px-2 bg-[#17186C] text-white rounded-2xl text-sm"
-            >
-              Redeem Coupon
+
+          {/* Footer */}
+          <div className="flex items-center justify-between mt-3">
+            <div className="text-xs font-semibold text-blue-700 bg-blue-100 px-3 py-1 rounded-full">
+              {value?.couponCount} Coupons
+            </div>
+
+            <Link  href={`/Shop/${value.shopkeeper?.mobile}`}
+              className="px-4 py-1.5 bg-blue-700 text-white rounded-xl text-xs font-semibold
+                   shadow-sm" >Redeem
             </Link>
           </div>
         </div>
       </div>
-    ))
+    )
   )}
 </div>
+
+
+
 
 
 

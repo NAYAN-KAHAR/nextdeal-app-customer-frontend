@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation'; 
 // import axios from 'axios';
+
 import { Formik, useFormik } from 'formik';
 import * as Yup from 'yup';
+
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import Image from "next/image";
 import { FcGoogle } from 'react-icons/fc'; 
@@ -12,6 +14,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 const apiUrl = process.env.NEXT_PUBLIC_CUSTOMER_API_URL;
 import Loader from "../components/loader";
+import Link from "next/link";
 
 
 const SignupSchema = Yup.object().shape({
@@ -33,6 +36,8 @@ const SignUp  = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [auth, setAuth] = useState(false);
     const [loading, setLoading] = useState(true); 
+    const [btnLoader, setBtnLoader] = useState(false);
+
     const router = useRouter();
   // console.log(apiUrl)
 
@@ -57,6 +62,8 @@ const SignUp  = () => {
     checkAuth();
   }, [router]);
 
+
+  // formik for form
     const formik = useFormik({
     initialValues: {
       name: '',
@@ -71,7 +78,7 @@ const SignUp  = () => {
       console.log(values);
       const { isSignup, name, mobile, password} = values;
          try {
-         
+          setBtnLoader(true);
           if(signUp){
              const res = await axios.post(`${apiUrl}/api/signup`,
                 {name, mobile, password},{ withCredentials: true });
@@ -83,17 +90,21 @@ const SignUp  = () => {
               {mobile,password}, { withCredentials: true });
               console.log(res.data);
               toast.success(res.data.message);
-              router.push('/HomePage');
+              router.push(`/Otp?mobile=${mobile}`);
+
           }
-        
+        setBtnLoader(false);
       } catch (err) {
         console.error(err);
         toast.error(err?.response?.data?.error);
         router.push('/Signup');
+      }finally{
+        setBtnLoader(false)
       }
      
     },
   });
+
 if (loading) return (
   <div className="flex justify-center items-center h-screen">
     <Loader />
@@ -151,7 +162,7 @@ if (loading) return (
               <label className="font-semibold text-gray-800 text-sm">Mobile Number</label>
               <input type="tel" name="mobile" placeholder="Enter mobile number"
                 onChange={formik.handleChange}
-                value={formik.values.mobile}
+                value={formik.values.mobile} maxLength={10}
                 className="w-full p-2.5 mt-1 rounded-lg border border-gray-300 focus:ring-2
                  focus:ring-black outline-none transition"
               />
@@ -175,11 +186,22 @@ if (loading) return (
               {formik.touched.password && formik.errors.password && (
                 <div className="text-red-500 text-sm mt-1">{formik.errors.password}</div>
               )}
+            {signUp ? '' :  <Link href={'/forgetPassMobile'} className="flex  justify-end text-end mt-1 
+            font-medium text-xs text-red-600 cursor-pointer">
+                Forget Password</Link> }
             </div>
           </div>
 
-          <button type="submit"
-           className="mt-6 w-full bg-black hover:bg-gray-700 text-white py-3 rounded-xl font-semibold transition cursor-pointer"  > {signUp ? 'Register' : 'Login'}</button>
+       <button type="submit" disabled={btnLoader} className={`mt-6 w-full py-3 rounded-xl
+            font-semibold transition  flex justify-center items-center gap-2 text-white 
+               ${btnLoader ? 'bg-gray-500 cursor-not-allowed' : 'bg-black hover:bg-gray-700 cursor-pointer '}`}>
+            {btnLoader && (
+              <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            )}
+
+         {signUp ? 'Register' : 'Login'}
+       </button>
+
 
           <p className="text-center text-gray-700 mt-4">
             {signUp ? 'Already have an account?' : "Don’t have an account?"}{' '}

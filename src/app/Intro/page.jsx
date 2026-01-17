@@ -1,81 +1,38 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'
-import axios from 'axios';
-const apiUrl = process.env.NEXT_PUBLIC_CUSTOMER_API_URL;
-
-
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const IntroPage = () => {
-  const [auth, setAuth] = useState(false);
-  // const [loading, setLoading] = useState(true);
-
   const router = useRouter();
-  
-  //Redirect if already logged in
+
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get(`${apiUrl}/api/verify`, {
-          withCredentials: true,
-        });
-
-        if (res.data.authenticated) {
-          setAuth(true);
-          router.push('/HomePage');
-        }
-      } catch (err) {
-        console.log('User not logged in');
-      }
-    };
-
-    // checkAuth();
+    const timer = setTimeout(() => router.push('/Signup'), 2500);
+    return () => clearTimeout(timer);
   }, [router]);
 
+  return (
+    <div className="h-screen w-screen flex items-center justify-center bg-[#19176C] overflow-hidden">
+      <div className="flex flex-col items-center animate-fade-in">
+        
+        <Image src="/shops/logo4.png"  alt="NEXTDEAL Logo"
+          width={140} height={140}
+          className="rounded-full bg-white p-2 shadow-xl animate-scale"/>
 
-
-  return auth ? null : (
-    <div className="min-h-screen flex flex-col justify-between overflow-hidden bg-gray-50 relative">
-      
-      {/* Decorative Top Wave */}
-      <div className="absolute top-0 left-0 w-full">
-        <svg viewBox="0 0 1440 320" className="w-full h-[140px]" preserveAspectRatio="none">
-          <path fill="#ffffff" fillOpacity="0.3"
-            d="M0,160L60,149.3C120,139,240,117,360,128C480,139,600,181,720,192C840,203,960,181,1080,165.3C1200,149,1320,139,1380,133.3L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
-          ></path>
-        </svg>
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center 
-      z-10 relative">
-        <Image src="/logo3.png" alt="Logo" width={160} height={160}
-          className="rounded-full shadow-lg animate-bounce-slow bg-[#19176C]"/>
-
-        <h1 className="mt-6 text-4xl font-extrabold tracking-wide">
-          Welcome to <span className="font-extrabold text-black">NEXTDEAL</span>
+        <h1 className="mt-6 text-3xl font-extrabold text-white tracking-wide animate-fade-delay">
+          NEXTDEAL
         </h1>
-        <p className="mt-3 text-lg max-w-xs">
-          Discover amazing offers and save more every day!
+
+        <p className="mt-2 text-sm text-gray-200 animate-fade-delay">
+          Discover amazing offers
         </p>
 
-        <Link href="/Signup">
-          <button className="mt-10 w-70  font-semibold py-3 px-8
-           rounded-full shadow-md text-white bg-black  transition-all duration-300 cursor-pointer"
-          > Get Started </button>
-        </Link>
       </div>
-
-   
     </div>
   );
-}
+};
 
 export default IntroPage;
-
-
 
 
 

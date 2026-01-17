@@ -7,13 +7,12 @@ body {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  /* font-family: Arial, Helvetica, sans-serif; */
   /* min-height: 100vh; */
   width: 100%;
 
-   font-family: "Jost", sans-serif;
+  font-family: var(--font-jost), sans-serif;
   font-optical-sizing: auto;
-  font-weight:400;
+  font-weight: 400;
   font-style: normal;
 }
 
@@ -30,7 +29,7 @@ body {
 
 .scroll-container {
   overflow-x: auto;
-  overflow-y: auto;/* <-- important */
+  overflow-y: auto;
 }
 
 
@@ -68,3 +67,28 @@ body {
 }
 
 
+@keyframes fadeIn {
+  from { opacity: 0;  transform: translateY(10px);}
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.85); opacity: 0; }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1.2s ease-out forwards;
+}
+
+.animate-scale {
+  animation: scaleUp 1s ease-out forwards;
+}
+
+.animate-fade-delay {
+  animation: fadeIn 1.2s ease-out forwards;
+  animation-delay: 0.4s;
+}

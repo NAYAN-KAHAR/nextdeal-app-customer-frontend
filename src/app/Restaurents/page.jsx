@@ -1,19 +1,17 @@
 'use client';
 import { FiSearch } from 'react-icons/fi';
 import { FaCircleUser } from "react-icons/fa6";
-import { FaLocationArrow } from "react-icons/fa6";
 import { CiFilter } from "react-icons/ci";
 import { GoPlus } from "react-icons/go";
 import { TiMinus } from "react-icons/ti";
-
-import { IoIosArrowDown, IoIosArrowRoundBack } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowRoundBack, IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { useState, useEffect } from 'react';
 import { RxCross2 } from "react-icons/rx";
-import { MdKeyboardBackspace } from "react-icons/md";
-import { FiBookmark } from "react-icons/fi"; // or any other icon you prefer
-import { AiFillStar } from "react-icons/ai";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import { FiBookmark } from "react-icons/fi";
 import { IoArrowForward } from "react-icons/io5";
+import { TbHelpSquareFilled } from "react-icons/tb";
+import { CiSearch } from "react-icons/ci";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; 
 import axios from 'axios';
@@ -23,8 +21,8 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css'; 
 import AddCardItem from '../components/addCard';
 import ViewCardItem from '../components/viewCard';
-import Loader from '../components/loader';
-
+import Swal from 'sweetalert2';
+import CustomerLocation from '../components/customerLocation';
 
 const foodCategories = [
   {
@@ -144,6 +142,17 @@ const RestaurantsPage = () => {
 
     const [searchRestualtLoader, setSearchRestualtLoader] = useState(false);
     const [allFoods,setAllFoods] = useState([]);
+    const [customerProfile, setCustomerProfile] = useState(false);
+    const [userData, setUserData] = useState();
+    const [editProfile, setEditProfile] = useState(false);
+    const [btnLoader, setBtnLoader] = useState(false);
+
+    const [userName, setUserName] = useState(userData?.name || "");
+    const [userEmail, setUserEmail] = useState(userData?.email || "");
+    const [locationSelect, setLocationSelect] = useState(false);
+
+   
+
     const router =  useRouter();
 
 
@@ -168,87 +177,24 @@ const RestaurantsPage = () => {
   }, [router]);
 
 
-// fetch location Get user location
-  // useEffect(() => {
-  //   if (!navigator.geolocation) return;
 
-  //   navigator.geolocation.getCurrentPosition(
-  //     (pos) => setLocation({
-  //       lat: pos.coords.latitude,
-  //       lng: pos.coords.longitude
-  //     }),
-  //     (err) => console.error("Geolocation error:", err)
-  //   );
-  // }, []);
+useEffect(() => {
+  const getLoginUser = async () => {
+    try{
+      const res =  await axios(`${apiUrl}/api/customer-profile`, {withCredentials:true});
+      console.log(res.data.user);
+      setUserData(res.data.user);
+      window.scroll(0,0);
+    }catch(err){
+      console.log(err);
+    }
+  }
 
-  // // 2️⃣ Reverse geocode when location changes
-  // useEffect(() => {
-  //   if (!location) return;
-  //   const { lat, lng } = location;
-
-  //   fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       console.log("Full place details:", data);
-  //       console.log("Address:", data.address);
-  //     })
-  //     .catch(err => console.error(err));
-  // }, [location]);
+  getLoginUser();
+},[locationSelect]);
 
 
 
-// fetch location Get user location
-// useEffect(() => {
-//   if (!navigator.geolocation) return;
-
-//   navigator.geolocation.getCurrentPosition(
-//     (pos) => setLocation({
-//       lat: pos.coords.latitude,
-//       lng: pos.coords.longitude
-//     }),
-//     (err) => {
-//       console.error("Geolocation error:", err);
-//       if (err.code === 1) {
-//         // Permission denied
-//         setAdress(''); // Clear current address
-//         alert('Location access denied. Please enter your address manually.');
-//       }
-//     }
-//   );
-// }, []);
-
-// // Reverse geocode when location changes
-// useEffect(() => {
-//   if (!location) return;
-//   const { lat, lng } = location;
-
-//   fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
-//     .then(res => res.json())
-//     .then(data => {
-//       if (data && data.display_name) {
-//         setAdress(data.display_name);
-//       } else {
-//         setAdress('');
-//       }
-//     })
-//     .catch(err => console.error(err));
-// }, [location]);
-
-
-// {!location && !address && (
-//   <div className="manual-address">
-//     <p>Enter your address:</p>
-//     <input
-//       type="text"
-//       value={address}
-//       onChange={(e) => setAdress(e.target.value)}
-//       placeholder="Enter your location"
-//     />
-//   </div>
-// )}
-
-  
-// lat:23.9057271,log:87.4961469,
 // scroll stick bar logic here
 useEffect(() => {
   const handleScroll = () => {
@@ -258,7 +204,7 @@ useEffect(() => {
     if (currentScrollPos === 0) {
       // At the very top of the page
       setTimeout(() =>setShowHeader(true), 200);
-    } else if (currentScrollPos > prevScrollPos && currentScrollPos > 200) {
+    } else if (currentScrollPos > prevScrollPos && currentScrollPos > 250) {
       // Scrolling down past threshold
       setShowHeader(false);
     }
@@ -275,8 +221,8 @@ useEffect(() => {
 //  fetch all nearest restaurents
 const fetchAllRestuarents = async () => {
   try {
-    const lat = 23.9057271;
-    const lng = 87.4961469; // use 'lng' to match backend
+    const lat = userData ? userData?.location.coordinates[1] :  23.9057271;
+    const lng = userData ? userData?.location.coordinates[0]: 87.4961469; // use 'lng' to match backend
     const res = await axios.get(`${apiUrl}/api/get-all-nearest-restuarents?lat=${lat}&lng=${lng}`);
     // console.log('fetchAllRestuarents', res.data);
     setRestaurantData(res.data.restaurants);
@@ -315,10 +261,13 @@ const fetchAllRestuarents = async () => {
  
 
 
+
+// Fetch restaurants ONLY when userData is available
 useEffect(() => {
+  if (!userData?.location) return;
   fetchAllRestuarents();
-  // fetchAllCategory();
-},[]);
+}, [userData]);
+
 
 const handleAllButReset = () => {
   setFoodLoading(true); 
@@ -776,6 +725,30 @@ const handleFiters = (filter) => {
 };
 
 
+const handleProfileUpdateBtn  = async () => {
+  try{
+    setBtnLoader(true);
+    console.log('clicked');
+    const res =  await axios.put(`${apiUrl}/api/profile-update`, 
+      {name:userName, email:userEmail}, {withCredentials:true});
+
+      console.log(res.data);
+       Swal.fire({
+            title: 'Done!',
+            text: 'Successfully Updated Profile!',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+    setLoading(false);
+  }catch(err){
+    console.log(err);
+  }finally{
+    setBtnLoader(false);
+  }
+}
+
+
+
 
 
 // console.log('isSort', isSort);
@@ -888,17 +861,32 @@ return (
 <div className="w-full flex flex-col z-10 relative overflow-y-auto no-scrollbar">
 
   <div className="text-center w-full md:w-1/2 flex flex-col max-w-4xl mx-auto ">
-   <div className='flex justify-between items-center p-2'>
-      <div>
-        <h1 className='flex items-center gap-2'>
-            <FaLocationArrow size={27} className='text-rose-600' />
-            <span className='font-bold text-lg'>Locating...</span>
+    <div className='flex justify-between items-center p-2'>
+
+      <div className='flex flex-col items-start justify-start'>
+        <h1 className='flex items-center gap-1'>
+           <Link href={'/HomePage'} className="w-8 h-8 flex items-center justify-center 
+              rounded-full  bg-white shadow-md hover:shadow-lg transition-shadow duration-300">
+              <IoIosArrowBack size={28} className="text-rose-600" />
+           </Link>
+              <div className='flex items-center cursor-pointer' onClick={() => setLocationSelect(true)}>
+                 <span className='font-bold text-lg'>{userData && userData?.city}</span>
+                 <MdKeyboardArrowDown size={22}/>
+              </div>
          </h1>
-       <p className='text-sm px-3 font-semibold text-gray-600'>Oxford United Kingdom</p>
+         
+       <p className='text-sm font-medium text-gray-600 px-10'>{userData && userData?.city},
+        {userData && userData?.state}
+       </p>
       </div>
-     <div> <FaCircleUser size={33} className='text-gray-600 cursor-pointer' /> </div>
+      <div >
+       <FaCircleUser size={38} className='text-gray-600 cursor-pointer' 
+       onClick={() => setCustomerProfile(true)}/>
+        </div>
  </div>
-               
+                
+
+                
 
 {/* input fields with filter bar */}
 {inputPopUp && (
@@ -1073,7 +1061,8 @@ return (
                <div>
                  <p className="font-bold text-lg text-slate-900">₹{v.price}</p>
                    {v.Discount > 0 && (
-                     <span className="text-xs bg-gradient-to-r from-orange-100 to-amber-50 text-orange-600 font-semibold px-2 py-1 rounded-md shadow-inner">
+                     <span className="text-xs bg-gradient-to-r from-orange-100 to-amber-50
+                      text-orange-600 font-semibold px-2 py-1 rounded-md shadow-inner">
                        {v.Discount}% OFF
                        </span>
                    )}
@@ -1113,11 +1102,11 @@ return (
 {/* === Fixed components outside popup scroll === */}
 
 {/* Add Card Item (Bottom) */}
-{totalItems > 0 && (
+{totalItems > 0 && !locationSelect ?(
   <div className="fixed bottom-2.5 left-0 w-full z-[1000] px-4">
     <AddCardItem totalItems={totalItems} handleViewClick={handleViewClick} />
   </div>
-)}
+):''}
 
 {/* Error Modal (Center) */}
 {addItemError && (
@@ -1154,6 +1143,7 @@ return (
 {/* Veg Restuarans modals */}
 <div className={`w-full mx-auto z-30 bg-white transition-all duration-300
       ${showHeader ? 'sticky top-0' : 'fixed top-0 md:w-1/2 shadow-md'}`}>
+
 
  <div className="sticky top-0 z-40 bg-white p-2">
     <div className="max-w-4xl mx-auto flex md:justify-between items-center gap-2">
@@ -1210,9 +1200,8 @@ return (
     ))}
 </div>
 
-
-
 </div>
+{/***********************  Subheader and Veg are ended     ***************************************/}
 
 
 
@@ -1223,10 +1212,8 @@ return (
 
 <div className="flex gap-4 overflow-auto px-4 py-3 scrollbar-hide">
 
-  <Link  href={"/99Page"}
-      className="w-[50%] sm:w-[200px] p-1 rounded-xl border border-gray-200 
-                flex flex-col items-center cursor-pointer 
-                hover:shadow-md transition duration-200" >
+  <Link  href={"/99Page"} className="w-[50%] sm:w-[200px] p-1 rounded-xl border border-gray-200 
+                flex flex-col items-center cursor-pointer " >
       <h2 className="text-xs text-gray-700 font-semibold text-center">99 STORE</h2>
       <p className="text-xs text-red-500 font-semibold text-center">MEAL AT 99</p>
 
@@ -1415,11 +1402,7 @@ return (
 }
 
 
-
-
-
-
-{/* ended all restuarents */}
+{/***************************** ended all restuarents list show  ****************************/}
 
 
 
@@ -1614,12 +1597,160 @@ return (
 
 
 {/* Bottom View Cart Bar */}
-{totalItems && totalItems > 0 ? (
+{totalItems && totalItems > 0   ? (
   <AddCardItem totalItems={totalItems}  handleViewClick = {handleViewClick} /> ):''}
 
 
-{isViewClick && ( <ViewCardItem isViewClick={isViewClick} setIsViewClick={setIsViewClick}/>)}
+{isViewClick &&  ( <ViewCardItem isViewClick={isViewClick} 
+setIsViewClick={setIsViewClick}/>)}
 
+
+
+
+{/*************************** address modal   ****************************************/}
+
+<CustomerLocation locationSelect={locationSelect} 
+  setLocationSelect={setLocationSelect} userData={userData}/>
+
+{/*****************************  ended address modal  **********************************/}
+
+
+
+
+
+<div className={`fixed top-0 right-0 w-full max-w-md h-screen bg-gray-50 z-50
+    py-3 px-4 flex flex-col gap-6 text-gray-900
+    transform transition-transform duration-500 ease-in-out
+    ${customerProfile ? 'translate-x-0' : 'translate-x-full'}`}>
+
+  {/* TOP HEADER */}
+  <div className="w-full flex items-center gap-4 pb-2 border-b border-gray-200 z-[100]">
+    <IoIosArrowRoundBack size={35} onClick={() => setCustomerProfile(false)} 
+      className='cursor-pointer'/>
+    <h1 className="text-xl font-bold">Account Details</h1>
+  </div>
+
+  {/* PROFILE CARD */}
+  <div className="bg-white rounded-2xl shadow p-5 flex items-center gap-4 border
+   border-gray-100 ">
+    <img src={userData?.profileImg ? userData.profileImg : `/demo_user.jpg`}
+      className="w-20 h-20 rounded-full object-cover border-2 border-orange-400 shadow-md"
+    />
+    <div className="flex flex-col justify-center">
+      <h2 className="text-lg font-semibold text-gray-900 capitalize">{userData && userData?.name}</h2>
+      <p className="text-sm text-gray-500">{userData && userData?.mobile}</p>
+      <p className="text-sm mt-1 text-orange-500 font-semibold cursor-pointer hover:underline"
+      onClick={() => setEditProfile(true)}>
+        Edit Profile
+      </p>
+    </div>
+  </div>
+
+  {/* ACCOUNT SETTINGS */}
+  <div className="flex flex-col gap-4">
+    <p className="text-xs text-gray-500 font-semibold px-1">ACCOUNT SETTINGS</p>
+
+    <div className="bg-white rounded-2xl shadow divide-y divide-gray-100">
+      {[
+        { label: "Saved Addresses", page: "/" },
+        { label: "My Orders", page: "/MyFoodOrder" },
+        { label: "Payments & Refunds", page: "/" },
+      ].map((item, i) => (
+        <Link href={item.page} key={i}  className="flex justify-between items-center p-4 hover:bg-gray-50
+         transition rounded-2xl w-full cursor-pointer"   >
+          <span className="font-medium text-gray-800">{item.label}</span>
+           <IoIosArrowForward size={30}/>
+        </Link>
+      ))}
+    </div>
+
+    {/* MORE SETTINGS */}
+    <p className="text-xs text-gray-500 font-semibold mt-6 mb-2 px-1">MORE</p>
+
+    <div className="bg-white rounded-2xl shadow divide-y divide-gray-100">
+      <button className="flex justify-between items-center p-4 hover:bg-gray-50 transition rounded-2xl w-full">
+        <span className="font-medium text-gray-800">Help & Support</span>
+        <TbHelpSquareFilled size={28}/>
+      </button>
+
+      <button className="flex justify-between items-center p-4 text-red-600 hover:bg-red-50 transition rounded-2xl w-full">
+        <span className="font-semibold">Logout</span>
+        <img src="/logout.png" className="w-7" />
+      </button>
+    </div>
+  </div>
+
+
+</div>
+
+
+
+
+{/* Edit Profile for Customer */}
+
+<div className={`fixed top-0 right-0 w-full max-w-md h-screen bg-gray-50 z-50
+    py-3 px-4 flex flex-col gap-6 text-gray-900
+    transform transition-transform duration-500 ease-in-out
+    ${editProfile ? 'translate-x-0' : 'translate-x-full'}`}>
+
+  {/* TOP HEADER */}
+  <div className="w-full flex items-center gap-4 pb-2 border-b border-gray-200 z-[100]">
+    <IoIosArrowRoundBack size={35} onClick={() => setEditProfile(false)} 
+      className='cursor-pointer'/>
+    <h1 className="text-xl font-bold">Update Account</h1>
+  </div>
+
+  <div className="space-y-5 bg-white p-2 rounded-xl shadow">
+  
+
+    <div className="flex flex-col">
+      <label className="mb-1 text-gray-700 font-semibold">Full Name</label>
+      <input type="text" value={ userName || userData?.name} 
+          onChange={(e) => setUserName(e.target.value)}
+        className="p-2.5 rounded-lg w-full border border-gray-300 focus:border-orange-500
+        outline-none transition"  placeholder="Enter your full name" 
+      />
+    </div>
+
+
+    <div className="flex flex-col">
+      <label className="mb-1 text-gray-700 font-semibold">Email</label>
+      <input type="email" value={userEmail ||  userData?.email} 
+      onChange={(e) => setUserEmail(e.target.value)}
+      className="p-2.5 rounded-lg w-full border border-gray-300 
+        focus:border-orange-500 outline-none transition" 
+        placeholder="Enter your email" 
+      />
+    </div>
+
+
+    <div className="flex flex-col">
+      <label className="mb-1 text-gray-700 font-semibold">Mobile Number</label>
+      <input  type="tel"  value={userData && userData?.mobile} readOnly
+      className="p-2.5 rounded-lg w-full border border-gray-300
+      focus:border-orange-500  outline-none transition" 
+        placeholder="Enter your mobile number" 
+
+      />
+    </div>
+
+    <div>
+      <button disabled={btnLoader} onClick={handleProfileUpdateBtn}
+        className={`relative flex items-center justify-center gap-2 
+          bg-orange-500 text-white rounded-2xl py-2 px-6 
+          transition disabled:bg-orange-300 disabled:cursor-not-allowed`}>
+      {btnLoader && (
+        <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+      )}
+      
+        {btnLoader ? "Updating..." : "Update Profile"}
+      </button>
+
+    </div>
+</div>
+
+
+</div>
 
 
   </div>

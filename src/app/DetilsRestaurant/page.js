@@ -3,7 +3,7 @@ import RestaurantsDetails from './restuarantDetails';
 
 export default function RestuarantDetailsWrapper() {
   return (
-    <Suspense fallback={<div>Loading QR Code Page...</div>}>
+    <Suspense fallback={<div></div>}>
       <RestaurantsDetails />
     </Suspense>
   );
