@@ -352,9 +352,9 @@ const HomePage = () => {
         rounded-lg font-medium cursor-pointer mb-2" > Allow Location
               </button>
 
-              <button onClick={() => setShowLocationModal(false)}
+              {/* <button onClick={() => setShowLocationModal(false)}
                 className="w-full text-gray-600 py-3 cursor-pointer" >Not Now
-              </button>
+              </button> */}
 
             </div>
           </div>

@@ -92,6 +92,7 @@ const CustomerLocation = ({ locationSelect, setLocationSelect, userData }) => {
 
 
   // Get user current location
+  // Get user current location
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported on this device");
@@ -101,35 +102,53 @@ const CustomerLocation = ({ locationSelect, setLocationSelect, userData }) => {
     navigator.geolocation.getCurrentPosition((pos) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
-      const geocoder = new window.google.maps.Geocoder();
 
-      geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-        if (status !== "OK" || !results?.length) {
-          console.error("Reverse Geocode Error:", status);
-          return;
-        }
+      // Use Nominatim (OpenStreetMap) instead of Google Geocoding API
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data || data.error) {
+            console.error("Reverse Geocode Error:", data.error);
+            return;
+          }
 
-        const components = results[0].address_components;
-        const get = (type) =>
-          components.find((c) => c.types.includes(type))?.long_name || "";
+          const address = data.address;
+          const street = address.road || address.pedestrian || "";
+          const area = address.suburb || address.neighbourhood || "";
+          const subarea = ""; // Nominatim might not strictly map to sublocality_level_2
+          const city = address.city || address.town || address.village || address.county || "";
+          const district = address.state_district || "";
+          const state = address.state || "";
+          const country = address.country || "";
+          const pincode = address.postcode || "";
 
-        const parsed = {
-          formatted: results[0].formatted_address,
-          street: get("route"),
-          area: get("sublocality_level_1"),
-          subarea: get("sublocality_level_2"),
-          city: get("locality") || get("administrative_area_level_3"),
-          district: get("administrative_area_level_2"),
-          state: get("administrative_area_level_1"),
-          country: get("country"),
-          pincode: get("postal_code"),
-          lat,
-          lng,
-        };
-        console.log("📍 Parsed Current Location →", parsed);
-        setLocation({ label: parsed.formatted, value: { lat, lng }, details: parsed });
-        setCurrentAddress(parsed.formatted);
-      });
+          // Construct a formatted address similar to Google's
+          const formatted = data.display_name;
+
+          const parsed = {
+            formatted: formatted,
+            street: street,
+            area: area,
+            subarea: subarea,
+            city: city,
+            district: district,
+            state: state,
+            country: country,
+            pincode: pincode,
+            lat,
+            lng
+          };
+
+          console.log("📍 Parsed Current Location (Nominatim) →", parsed);
+          setLocation({ label: parsed.formatted, value: { lat, lng }, details: parsed });
+          setCurrentAddress(parsed.formatted);
+
+
+        })
+        .catch((err) => {
+          console.error("Nominatim Geocode Error:", err);
+        });
+
     },
       (err) => {
         console.error("Geolocation Error:", err);
@@ -221,7 +240,7 @@ const CustomerLocation = ({ locationSelect, setLocationSelect, userData }) => {
   return (
     <>
       {/* Modal */}
-      <div className={`fixed top-0 right-0 w-full max-w-md h-screen bg-gray-50 z-50
+      <div className={`fixed top-0 right-0 w-full max-w-md h-screen bg-gray-50 z-1001
          py-3 px-4 flex flex-col gap-6 text-gray-900
           transform transition-transform duration-500 ease-in-out
           ${locationSelect ? "translate-x-0" : "translate-x-full"}`}
@@ -357,7 +376,7 @@ const CustomerLocation = ({ locationSelect, setLocationSelect, userData }) => {
 
         {/* Confirm Location */}
         {location && (
-          <div className="bg-white shadow-2xl rounded-xl fixed bottom-3
+          <div className="bg-white shadow-2xl rounded-xl fixed bottom-24 z-50
           left-1/2 -translate-x-1/2 w-[90%] max-w-md
           border border-gray-300 ">
 
