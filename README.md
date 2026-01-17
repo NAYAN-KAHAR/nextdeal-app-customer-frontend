@@ -37,4 +37,72 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 
 
-<!-- ********************************************************************************************* -->
+<!-- ***********************************
+// fetch  user location lat and lng 
+const handleAllowLocation = () => {
+  if (!navigator.geolocation) return;
+  
+  // Get the user's current position
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      setLocation({ lat: latitude, lng: longitude });
+      setShowLocationModal(false);
+      console.log(latitude, longitude);
+    },
+    (error) => {
+      console.log("Could not get location:", error);
+    }
+  );
+};
+
+
+
+  
+  // Reverse geocode when location changes
+  useEffect(() => {
+  if (!location) return;
+
+  const fetchLocationDetails = async () => {
+    const { lat, lng } = location;
+
+    try {
+      const res = await fetch(
+       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json` );
+
+      const data = await res.json();
+      console.log("Full place details:", data);
+      console.log("Address:", data.address);
+
+      // store formatted address details
+      const formatted = data.display_name;
+      const city = data.address.city || data.address.town || data.address.village;
+      const state = data.address.state;
+
+      const payload = {
+        address: formatted,
+        city,
+        state,
+        location: {
+          type: "Point",
+          coordinates: [lng, lat],
+        },
+      };
+
+      // save to DB
+      const updateRes = await axios.put(`${apiUrl}/api/profile-update`,
+         payload,{ withCredentials: true } );
+      console.log("Updated DB:", updateRes.data);
+      setUser(updateRes.data.user);
+      setShowLocationModal(false);
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  };
+
+  fetchLocationDetails();
+}, [location]);
+
+
+********************************************************** -->
